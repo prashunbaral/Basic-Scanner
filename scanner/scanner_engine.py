@@ -285,11 +285,8 @@ class VulnerabilityScanner:
                         for param_name in params.keys():
                             # Try marker variations on this specific URL
                             marker_variations = [
-                                ('"><s>superman</s>', 'tag_break'),
+                                ('"><s>superman', 'tag_break'),
                                 ('" superman', 'attribute_quote'),
-                                ('superman">', 'attribute_close'),
-                                ("' superman", 'single_quote'),
-                                ("superman'>", 'single_close'),
                             ]
                             
                             for marker_payload, marker_type in marker_variations:
@@ -335,7 +332,7 @@ class VulnerabilityScanner:
                 verify_ssl=False
             )
             
-            if response and self._is_marker_actually_reflected(marker, response):
+            if response and self._is_marker_actually_reflected(marker, response, marker_type):
                 # Found injectable parameter in discovered URL
                 finding = {
                     'type': 'INJECTABLE',
@@ -376,11 +373,8 @@ class VulnerabilityScanner:
             if not self.xss_verbose:
                 # Try multiple marker variations to detect different escaping contexts
                 marker_variations = [
-                    ('"><s>superman</s>', 'tag_break'),           # Try breaking out of tag
-                    ('" superman', 'attribute_quote'),             # Try inside attribute with quote
-                    ('superman">', 'attribute_close'),             # Try closing the attribute
-                    ("' superman", 'single_quote'),                # Single quote variant
-                    ("superman'>", 'single_close'),                # Single quote close
+                    ('"><s>superman', 'tag_break'),
+                    ('" superman', 'attribute_quote'),
                 ]
                 
                 for marker_payload, marker_type in marker_variations:
@@ -391,7 +385,7 @@ class VulnerabilityScanner:
                         verify_ssl=False
                     )
                     
-                    if marker_response and self._is_marker_actually_reflected(marker_payload, marker_response):
+                    if marker_response and self._is_marker_actually_reflected(marker_payload, marker_response, marker_type):
                         # Parameter is injectable with this specific marker
                         finding = {
                             'type': 'INJECTABLE',
@@ -555,19 +549,11 @@ class VulnerabilityScanner:
         
         return False
     
-    def _is_marker_actually_reflected(self, marker: str, response: str) -> bool:
+    def _is_marker_actually_reflected(self, marker: str, response: str, marker_type: str = 'generic') -> bool:
         """
-        Check if marker is reflected in raw/unencoded form in the response.
-        Ignore HTML-encoded or URL-encoded versions.
-        
-        For marker variations like:
-        - '"><s>superman</s>' (tag break)
-        - '" superman' (attribute quote)
-        - 'superman">' (attribute close)
-        etc.
-        
-        Only count it as reflected if it appears as-is in the source, not encoded.
-        CRITICAL: URL-encoded markers like superman%22%3E are NOT exploitable!
+        Context-aware marker reflection check.
+        Reject encoded reflections and JSON/escaped-string contexts.
+        Accept only HTML-breakout style reflections.
         """
         from urllib.parse import quote
         import html
@@ -577,20 +563,58 @@ class VulnerabilityScanner:
         url_encoded_marker = quote(marker, safe='')
         html_encoded_marker = html.escape(marker)
         
-        # If marker is ONLY in encoded form (not raw), reject it
+        # If marker is only encoded (not raw), reject.
         if marker not in response:
-            # Marker not in raw form at all
             if url_encoded_marker in response or html_encoded_marker in response:
-                # But it IS in encoded form - NOT exploitable
                 return False
+            return False
         
-        # Only check for the raw, unencoded marker
-        # If found in raw form, it's injectable
-        if marker in response:
-            return True
+        if marker not in response:
+            return False
+
+        # Validate each raw occurrence contextually.
+        marker_len = len(marker)
+        search_from = 0
+        while True:
+            idx = response.find(marker, search_from)
+            if idx == -1:
+                break
+
+            context_start = max(0, idx - 220)
+            context_end = min(len(response), idx + marker_len + 220)
+            context = response[context_start:context_end]
+
+            # Reject common JSON object context: "key":"value"
+            if re.search(r'"[^"]+"\s*:\s*"', context):
+                search_from = idx + marker_len
+                continue
+
+            # Reject escaped-string reflection (common in JSON/JS strings).
+            if idx > 0 and response[idx - 1] == '\\':
+                search_from = idx + marker_len
+                continue
+
+            if marker_type == 'attribute_quote':
+                # Accept only if inside an HTML tag with attributes.
+                local_idx = context.find(marker)
+                left_lt = context.rfind('<', 0, local_idx)
+                right_gt = context.find('>', local_idx)
+                if left_lt != -1 and right_gt != -1:
+                    tag_fragment = context[left_lt:right_gt + 1]
+                    if '=' in tag_fragment:
+                        return True
+            elif marker_type == 'tag_break':
+                # Must reflect as raw tag-break sequence in HTML response.
+                if '><s>superman' in context:
+                    return True
+            else:
+                # Conservative fallback: raw marker in HTML-ish context.
+                if '<' in context and '>' in context:
+                    return True
+
+            search_from = idx + marker_len
         
-        # Don't check for encoded versions - those don't count as injectable
-        # (they may be in JavaScript strings or HTML-escaped contexts)
+        # Raw marker existed, but no exploitable context found.
         return False
     
     def _verify_xss_execution(self, response: str, payload: str) -> bool:
