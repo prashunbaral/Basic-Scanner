@@ -24,7 +24,7 @@ def scan_subdomains_batch(args):
     """Scan multiple subdomains from a file"""
     # Setup logging for batch mode
     if args.silent:
-        logger.setLevel(logging.WARNING)  # Only show warnings and higher
+        logger.setLevel(logging.CRITICAL)
     
     # Handle file path - convert to absolute if relative
     subdomains_file = args.subdomains
@@ -46,7 +46,7 @@ def scan_subdomains_batch(args):
         sys.exit(1)
     
     if args.silent:
-        print(f"🔍 Starting batch scan of {len(subdomains)} subdomains")
+        print(f"Scan begun: {len(subdomains)} subdomains")
     else:
         print(f"🔍 Starting batch scan of {len(subdomains)} subdomains")
         print(f"Flags: {' '.join(['--xss-only', '--deep', '--silent'])}\n")
@@ -70,7 +70,7 @@ def scan_subdomains_batch(args):
             target_url=url,
             threads=args.threads,
             timeout=args.timeout,
-            deep=True,  # Force deep for batch scanning
+            deep=args.deep,
             aggressive=args.aggressive,
             bypass_waf=args.bypass_waf,
             verbose=False,
@@ -87,12 +87,15 @@ def scan_subdomains_batch(args):
                 finding['subdomain'] = subdomain
                 all_findings.append(finding)
                 poc_url = finding.get('poc_url', finding.get('url', 'N/A'))
-                print(f"  ✅ [INJECTED] {poc_url}")
+                print(f"[INJECTABLE] {poc_url}")
     
     # Print summary
-    print(f"\n{'='*70}")
-    print(f"✅ Batch scan complete - Found {len(all_findings)} vulnerabilities across {len(subdomains)} subdomains")
-    print(f"{'='*70}\n")
+    if args.silent:
+        print(f"Scan ended: found {len(all_findings)} vulnerabilities across {len(subdomains)} subdomains")
+    else:
+        print(f"\n{'='*70}")
+        print(f"✅ Batch scan complete - Found {len(all_findings)} vulnerabilities across {len(subdomains)} subdomains")
+        print(f"{'='*70}\n")
     
     # Save results if requested
     if args.json and all_findings:
@@ -192,7 +195,7 @@ Examples:
     if args.verbose:
         logger.setLevel(logging.DEBUG)
     elif args.silent:
-        logger.setLevel(logging.WARNING)  # Only show warnings and higher (findings)
+        logger.setLevel(logging.CRITICAL)
     
     # Create scanner
     from scanner.scanner_engine import VulnerabilityScanner
@@ -258,31 +261,7 @@ Examples:
     
     # Run scan
     if args.silent:
-        # In silent mode, show URL and active flags
-        flags = []
-        if args.xss_only:
-            flags.append('--xss-only')
-        if args.sql_only:
-            flags.append('--sql-only')
-        if args.ssrf_only:
-            flags.append('--ssrf-only')
-        if args.xxe_only:
-            flags.append('--xxe-only')
-        if args.nuclei_only:
-            flags.append('--nuclei-only')
-        if args.deep:
-            flags.append('--deep')
-        if args.aggressive:
-            flags.append('--aggressive')
-        if args.path_xss:
-            flags.append('--path-xss')
-        if args.custom_param:
-            flags.append('--custom-param')
-        if args.sqlmap:
-            flags.append('--sqlmap')
-        
-        flags_str = ' '.join(flags) if flags else ''
-        print(f"🔍 Scanning {args.url} {flags_str}")
+        print(f"Scan begun: {args.url}")
     else:
         print(f"\n{'='*70}")
         print(f"🔍 Scanning: {args.url}")
@@ -296,7 +275,7 @@ Examples:
     # Output results
     if findings:
         if args.silent:
-            print(f"✅ Found {len(findings)} vulnerability/ies")
+            pass
         else:
             print(f"\n{'='*70}")
             print(f"✅ Found {len(findings)} vulnerability/ies")
@@ -304,10 +283,12 @@ Examples:
         # Always show findings details, regardless of silent mode
         for finding in findings:
             _print_finding(finding, silent=args.silent)
+        if args.silent:
+            print(f"Scan ended: found {len(findings)} vulnerabilities")
     else:
         # Show scan summary even if no findings
         if args.silent:
-            print(f"✅ Scan completed - No vulnerabilities found")
+            print(f"Scan ended: no vulnerabilities found")
         else:
             print(f"\n{'='*70}")
             print(f"✅ Scan completed - No vulnerabilities found")
@@ -330,9 +311,9 @@ Examples:
 def _print_finding(finding, silent=False):
     """Pretty print a single finding"""
     if silent:
-        # Silent mode: just show [INJECTED]URL
+        # Silent mode: injectable URL only
         poc_url = finding.get('poc_url', finding.get('url', 'N/A'))
-        print(f"[INJECTED]{poc_url}")
+        print(f"[INJECTABLE] {poc_url}")
     else:
         # Normal mode: detailed output
         severity_colors = {

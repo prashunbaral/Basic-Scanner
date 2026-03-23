@@ -23,7 +23,7 @@ pip install -r requirements.txt
 
 # Install Playwright browsers
 echo "[*] Installing Playwright browsers..."
-playwright install
+python -m playwright install chromium
 
 # Check for external tools
 echo ""
@@ -63,8 +63,11 @@ echo "=========================================="
 echo "Setup complete!"
 echo ""
 echo "To validate installation:"
-echo "  python3 main.py --validate-only"
+echo "  python3 main.py --validate"
 echo ""
 echo "To run a scan:"
-echo "  python3 main.py -d example.com"
+echo "  python3 main.py https://example.com --xss-only"
+echo ""
+echo "To run a subdomain batch scan:"
+echo "  python3 main.py --subdomains subdomains.txt --xss-only --deep --silent"
 echo "=========================================="

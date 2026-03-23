@@ -47,7 +47,8 @@ class PlaywrightSpider:
             Dict with discovered URLs and parameters
         """
         if not PLAYWRIGHT_AVAILABLE:
-            self.logger.error("Playwright not installed. Install with: pip install playwright && playwright install")
+            if not self.silent:
+                self.logger.error("Playwright not installed. Install with: pip install playwright && python -m playwright install chromium")
             return {"urls": [], "parameters": []}
         
         try:
@@ -75,7 +76,10 @@ class PlaywrightSpider:
                 await browser.close()
         
         except Exception as e:
-            self.logger.error(f"Playwright error: {e}")
+            if not self.silent:
+                self.logger.error(f"Playwright error: {e}")
+            else:
+                self.logger.debug(f"Playwright error (silent mode): {e}")
         
         return {
             "urls": list(self.discovered_urls),
@@ -206,5 +210,8 @@ def run_playwright_spider(url: str, timeout: int = 30, max_pages: int = 50, verb
         result = asyncio.run(spider.crawl(url, headless=True))
         return result
     except Exception as e:
-        logging.error(f"Playwright spider error: {e}")
+        if not silent:
+            logging.error(f"Playwright spider error: {e}")
+        else:
+            logging.debug(f"Playwright spider error (silent mode): {e}")
         return {"urls": [], "parameters": []}
