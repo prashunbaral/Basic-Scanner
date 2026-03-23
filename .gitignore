@@ -1,8 +1,13 @@
-# Virtual environment
+# Virtual environment (ignore venv directories inside scanner/)
 venv/
 env/
 ENV/
 .venv
+scanner/bin/
+scanner/include/
+scanner/lib/
+scanner/lib64
+scanner/pyvenv.cfg
 
 # Python
 __pycache__/
@@ -16,8 +21,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
@@ -25,6 +28,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+# Note: lib/ and lib64/ in venv are already excluded via scanner/ above
 
 # IDE
 .vscode/
