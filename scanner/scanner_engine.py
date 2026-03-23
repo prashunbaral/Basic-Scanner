@@ -4,6 +4,7 @@ Advanced scanner engine with sophisticated vulnerability detection
 
 import sys
 import time
+import logging
 from typing import List, Dict, Optional
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
@@ -41,7 +42,11 @@ class VulnerabilityScanner:
         self.findings = []
         self.tested = set()
         self.discovered_urls = []  # Store URLs discovered during parameter discovery
-        
+
+        # In silent mode, suppress warning/info logs from scanner internals.
+        if self.silent:
+            logger.setLevel(logging.CRITICAL)
+
         if not silent:
             logger.info(f"Scanner initialized for: {self.target_url}")
             if deep:
@@ -104,7 +109,8 @@ class VulnerabilityScanner:
                 if hasattr(self, 'discovered_urls') and self.discovered_urls and 'xss' in scan_types:
                     logger.info(f"🔗 Also testing {len(self.discovered_urls)} discovered URLs for XSS injection...")
             else:
-                logger.warning("⚠️  No parameters discovered, using common defaults")
+                if not self.silent:
+                    logger.warning("⚠️  No parameters discovered, using common defaults")
                 parameters = common_params
         elif parameters:
             # Merge discovered parameters in URL with common parameters

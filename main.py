@@ -52,6 +52,7 @@ def scan_subdomains_batch(args):
         print(f"Flags: {' '.join(['--xss-only', '--deep', '--silent'])}\n")
     
     all_findings = []
+    domain_param_seen = set()  # Track (domain, param) pairs to avoid duplicates
     
     for i, subdomain in enumerate(subdomains, 1):
         # Ensure subdomain has protocol
@@ -86,8 +87,30 @@ def scan_subdomains_batch(args):
             for finding in findings:
                 finding['subdomain'] = subdomain
                 all_findings.append(finding)
-                poc_url = finding.get('poc_url', finding.get('url', 'N/A'))
-                print(f"[INJECTABLE] {poc_url}")
+                
+                # Debug: Log the complete finding for diagnostics
+                param = finding.get('parameter', 'UNKNOWN_PARAM')
+                test_url = finding.get('test_url', '')
+                payload = finding.get('payload', '')
+                payload_type = finding.get('payload_type', 'unknown')
+                base_url = finding.get('url', subdomain)
+                
+                # Deduplication: track (domain, parameter) pairs
+                domain_base = base_url.split('?')[0].split('#')[0]
+                dedup_key = f"{domain_base}:{param}"
+                
+                # Only print if we haven't seen this exact (domain, parameter) pair before
+                if dedup_key not in domain_param_seen:
+                    domain_param_seen.add(dedup_key)
+                    
+                    # Show the actual test URL if it exists, otherwise construct it
+                    if test_url and '?' in test_url:
+                        display_url = test_url
+                    else:
+                        # Fallback: construct the URL with parameter
+                        display_url = f"{base_url}?{param}={payload}"
+                    
+                    print(f"[INJECTABLE] {display_url} | param={param} | type={payload_type}")
     
     # Print summary
     if args.silent:
@@ -311,9 +334,20 @@ Examples:
 def _print_finding(finding, silent=False):
     """Pretty print a single finding"""
     if silent:
-        # Silent mode: injectable URL only
-        poc_url = finding.get('poc_url', finding.get('url', 'N/A'))
-        print(f"[INJECTABLE] {poc_url}")
+        # Silent mode: show the actual injected URL with parameter and what was injected
+        param = finding.get('parameter', 'UNKNOWN_PARAM')
+        test_url = finding.get('test_url', '')
+        payload = finding.get('payload', '')
+        payload_type = finding.get('payload_type', 'unknown')
+        base_url = finding.get('url', 'N/A')
+        
+        # Show the actual test URL if it exists, otherwise construct it
+        if test_url and '?' in test_url:
+            display_url = test_url
+        else:
+            display_url = f"{base_url}?{param}={payload}"
+        
+        print(f"[INJECTABLE] {display_url} | param={param} | type={payload_type}")
     else:
         # Normal mode: detailed output
         severity_colors = {
