@@ -317,7 +317,6 @@ Examples:
             print(f"✅ Scan completed - No vulnerabilities found")
             print(f"{'='*70}")
             print(f"  Target: {args.url}")
-            print(f"  Parameters tested: {len(scanner.parameters) + len(scanner.custom_parameters)}")
             print(f"  URLs discovered: {len(scanner.discovered_urls)}")
             print(f"  Scan types: {', '.join(scan_types)}")
             print()
@@ -361,8 +360,11 @@ def _print_finding(finding, silent=False):
         color = severity_colors.get(finding.get('severity', 'Info'), '')
         
         print(f"{color}[{finding.get('severity', 'Info').upper()}]{reset} {finding.get('type', 'Unknown')}")
-        print(f"  URL: {finding.get('url', 'N/A')}")
+        # Use test_url (with payload) if available, otherwise fall back to base url
+        display_url = finding.get('test_url') or finding.get('url', 'N/A')
+        print(f"  URL: {display_url}")
         print(f"  Parameter: {finding.get('parameter', 'N/A')}")
+        print(f"  Payload: {finding.get('payload', 'N/A')}")
         if 'poc_url' in finding:
             print(f"  PoC: {finding['poc_url']}")
         print(f"  Proof: {finding.get('proof', 'N/A')[:150]}")

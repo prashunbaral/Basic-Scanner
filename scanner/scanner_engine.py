@@ -425,7 +425,7 @@ class VulnerabilityScanner:
                             logger.info(f"    URL: {marker_url}")
                             return finding
                         else:
-                            self.log_info(f"  ❌ Context validation failed")
+                            self.log_info(f"  ❌ Context validation FAILED")
                     else:
                         self.log_info(f"  ❌ Marker NOT found in response")
                 
@@ -576,31 +576,25 @@ class VulnerabilityScanner:
     def _is_marker_actually_reflected(self, marker: str, response: str, marker_type: str = 'generic') -> bool:
         """
         Marker reflection check - MUST be raw (unencoded) in HTML source to be exploitable.
-        URL-encoded or HTML-encoded reflections are NOT exploitable for XSS.
+        Only rejects when we're sure it's in a false-positive context.
         """
         if marker not in response:
             # Marker not reflected - not exploitable
+            logger.debug(f"Marker not found in response")
             return False
         
-        # Marker IS reflected in raw form - validate it's not a false positive
+        # Marker IS reflected in raw form
         idx = response.find(marker)
+        logger.debug(f"Raw marker found at position {idx}")
         
-        # Basic false-positive checks:
-        # 1. Marker preceded by backslash (escaped string)
+        # Check 1: Is marker escaped with backslash? (e.g., \\")
         if idx > 0 and response[idx - 1:idx] == '\\':
+            logger.debug(f"Marker is escaped (backslash before it) - rejecting")
             return False
         
-        # 2. Deep inside JSON object value ("key": "...marker...")
-        context_start = max(0, idx - 150)
-        context_end = min(len(response), idx + len(marker) + 150)
-        context = response[context_start:context_end]
-        
-        # Reject if matches JSON object pattern
-        if re.search(r'"[^"]{1,100}?":\s*"[^"]{0,100}?' + re.escape(marker), context):
-            return False
-        
-        # Otherwise, raw marker is reflected and exploitable
-        logger.debug(f"✓ Raw marker reflected in response at position {idx}")
+        # For raw marker reflection, accept it
+        # The marker being in raw form in the response is inherently exploitable for XSS
+        logger.debug(f"✓ Raw marker reflected and not escaped - EXPLOITABLE")
         return True
     
     def _verify_xss_execution(self, response: str, payload: str) -> bool:
