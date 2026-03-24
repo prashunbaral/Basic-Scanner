@@ -25,6 +25,8 @@ def determine_scan_types(args):
     scan_types = []
     if args.xss_only:
         scan_types = ['xss']
+    elif args.xss_nuclei:
+        scan_types = ['xss', 'nuclei']
     elif args.sql_only:
         scan_types = ['sqli']
     elif args.ssrf_only:
@@ -221,6 +223,7 @@ Examples:
     # Scanning options
     parser.add_argument('--subdomains', type=str, help='File containing list of subdomains to scan (one per line)')
     parser.add_argument('--xss-only', action='store_true', help='Scan for XSS vulnerabilities only')
+    parser.add_argument('--xss-nuclei', action='store_true', help='Scan for XSS and Nuclei templates only')
     parser.add_argument('--sql-only', action='store_true', help='Scan for SQL Injection only')
     parser.add_argument('--ssrf-only', action='store_true', help='Scan for SSRF only')
     parser.add_argument('--xxe-only', action='store_true', help='Scan for XXE vulnerabilities only')
