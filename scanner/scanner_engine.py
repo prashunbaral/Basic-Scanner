@@ -26,12 +26,13 @@ import concurrent.futures
 class VulnerabilityScanner:
     """Main vulnerability scanner engine"""
     
-    def __init__(self, target_url: str, threads: int = 10, timeout: int = 30,
+    def __init__(self, target_url: str, threads: int = 10, timeout: int = 0,
                  deep: bool = False, aggressive: bool = False, bypass_waf: bool = False,
                  verbose: bool = False, silent: bool = False, live_output: bool = False, xss_verbose: bool = False):
         self.target_url = normalize_url(target_url)
         self.threads = min(threads, MAX_WORKERS)
-        self.timeout = timeout
+        # timeout=0 means unlimited
+        self.timeout = None if timeout == 0 else timeout
         self.deep = deep
         self.aggressive = aggressive
         self.bypass_waf = bypass_waf
@@ -42,6 +43,7 @@ class VulnerabilityScanner:
         self.findings = []
         self.tested = set()
         self.discovered_urls = []  # Store URLs discovered during parameter discovery
+        self.scan_types = []  # Store scan types for nuclei tag filtering
 
         # In silent mode, suppress warning/info logs from scanner internals.
         if self.silent:
@@ -87,6 +89,8 @@ class VulnerabilityScanner:
         if not scan_types:
             scan_types = ['xss', 'sqli']
         
+        # Store scan_types for use in nuclei scanning
+        self.scan_types = scan_types
         self.findings = []
         
         # Extract parameters from URL
@@ -99,18 +103,26 @@ class VulnerabilityScanner:
         if not parameters and not param:
             if not self.silent:
                 logger.warning("⚠️  No parameters found in URL, discovering from domain...")
+            else:
+                print("[DEBUG] No parameters in URL, starting discovery from domain...")
             discovered = self._discover_parameters_with_tools()
             if discovered:
                 # Merge discovered parameters with common parameters
                 parameters = list(set(discovered + common_params))
                 self.log_info(f"✓ Discovered {len(discovered)} parameters from domain, testing {len(parameters)} total with common defaults")
+                if self.silent:
+                    print(f"[DEBUG] Discovered {len(discovered)} parameters, total to test: {len(parameters)}")
                 
                 # Test discovered URLs directly (if any were found during parameter discovery)
                 if hasattr(self, 'discovered_urls') and self.discovered_urls and 'xss' in scan_types:
                     logger.info(f"🔗 Also testing {len(self.discovered_urls)} discovered URLs for XSS injection...")
+                    if self.silent:
+                        print(f"[DEBUG] Will test {len(self.discovered_urls)} discovered URLs for XSS")
             else:
                 if not self.silent:
                     logger.warning("⚠️  No parameters discovered, using common defaults")
+                else:
+                    print(f"[DEBUG] No parameters discovered. Using {len(common_params)} common default parameters")
                 parameters = common_params
         elif parameters:
             # Merge discovered parameters in URL with common parameters
@@ -119,9 +131,13 @@ class VulnerabilityScanner:
             parameters = [param]
         
         logger.info(f"Testing {len(parameters)} parameter(s)")
+        if self.silent:
+            print(f"[DEBUG] Starting XSS scan with {len(parameters)} parameters")
         
         # Run custom payload-based scans
         if 'xss' in scan_types:
+            if self.silent:
+                print(f"[DEBUG] Calling _scan_xss with parameters: {parameters[:5]}...")
             self._scan_xss(parameters)
             
             # Test discovered URLs for XSS
@@ -165,8 +181,10 @@ class VulnerabilityScanner:
                     logger.info(f"🔗 Testing {len(self.discovered_urls)} discovered URLs for XSS...")
                     self._test_discovered_urls_xss(self.discovered_urls)
         
-        # Run Nuclei scanning only when explicitly selected by scan_types.
-        if 'nuclei' in scan_types:
+        # Run Nuclei scanning when explicitly selected OR when XSS is being scanned
+        if 'nuclei' in scan_types or 'xss' in scan_types:
+            if self.silent:
+                print(f"[DEBUG] Starting Nuclei scan (deep={self.deep})")
             try:
                 if self.deep:
                     self._scan_nuclei_advanced()
@@ -174,7 +192,11 @@ class VulnerabilityScanner:
                     self._scan_nuclei()
             except Exception as e:
                 logger.debug(f"Nuclei scanning skipped: {e}")
+                if self.silent:
+                    print(f"[DEBUG] Nuclei error: {e}")
         
+        if self.silent:
+            print(f"[DEBUG] Scan complete. Total findings: {len(self.findings)}")
         return self.findings
     
     def _extract_parameters(self) -> List[str]:
@@ -370,6 +392,9 @@ class VulnerabilityScanner:
         if test_hash in self.tested:
             return None
         self.tested.add(test_hash)
+        
+        if self.silent and payload_name == 'marker':
+            print(f"[DEBUG _test_xss] Testing param={param} with marker")
         
         try:
             # MARKER-BASED DETECTION MODE (default)
@@ -1159,7 +1184,8 @@ class VulnerabilityScanner:
 
         # Default xss-only behavior: marker-based probing only (safe, low-noise).
         # Use dangerous payload set only when user explicitly requests xss_verbose mode.
-        if self.xss_verbose:
+        if self.silent:
+            print(f"[DEBUG _scan_xss] Using xss_verbose={self.xss_verbose} mode")
             payloads = CUSTOM_PARAM_PAYLOADS
         else:
             payloads = {
@@ -1274,6 +1300,9 @@ class VulnerabilityScanner:
                 '-v', '0',  # Minimal verbosity
             ]
             
+            if self.timeout is not None:
+                cmd.extend(['--timeout', str(self.timeout)])
+            
             if self.bypass_waf:
                 cmd.extend(['--tamper=space2comment,between'])
             
@@ -1322,6 +1351,8 @@ class VulnerabilityScanner:
     def _discover_parameters_with_tools(self):
         """Use various tools to discover parameters and URLs"""
         logger.info("🔍 [PARAM-DISCOVERY] Starting parameter discovery...")
+        if self.silent:
+            print("[DEBUG] Starting parameter discovery...")
         
         discovered_params = set()
         discovered_urls = []
@@ -1329,6 +1360,8 @@ class VulnerabilityScanner:
         # Try Playwright spider first for live parameter discovery from navigation
         if not self.silent:
             logger.info("🌐 Attempting Playwright headless browser crawling...")
+        if self.silent:
+            print("[DEBUG] Attempting Playwright headless browser crawling...")
         try:
             spider_result = run_playwright_spider(
                 self.target_url, 
@@ -1350,11 +1383,16 @@ class VulnerabilityScanner:
             logger.debug(f"Playwright spider error (this is optional): {e}")
         
         # Try gau piped to katana - discovers URLs AND parameters
-        if check_tool_exists('gau', 'gau --version') and check_tool_exists('katana', 'katana -h'):
+        gau_exists = check_tool_exists('gau', 'gau --version')
+        katana_exists = check_tool_exists('katana', 'katana -h')
+        if self.silent:
+            print(f"[DEBUG] gau exists: {gau_exists}, katana exists: {katana_exists}")
+        
+        if gau_exists and katana_exists:
             self.log_info("🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...")
             try:
                 domain = get_domain_from_url(self.target_url)
-                cmd = f"echo '{domain}' | gau | katana 2>&1 | head -500"
+                cmd = f"echo '{domain}' | gau | katana 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
@@ -1397,11 +1435,15 @@ class VulnerabilityScanner:
                 logger.debug(f"gau→katana error: {e}")
         
         # Try waybackurls piped to katana - discovers historical URLs with parameters
-        if check_tool_exists('waybackurls', 'waybackurls -h') and check_tool_exists('katana', 'katana -h'):
+        wayback_exists = check_tool_exists('waybackurls', 'waybackurls -h')
+        if self.silent:
+            print(f"[DEBUG] waybackurls exists: {wayback_exists}, katana exists: {katana_exists}")
+        
+        if wayback_exists and katana_exists:
             self.log_info("🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana...")
             try:
                 domain = get_domain_from_url(self.target_url)
-                cmd = f"echo '{domain}' | waybackurls | katana 2>&1 | head -500"
+                cmd = f"echo '{domain}' | waybackurls | katana 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
@@ -1444,10 +1486,10 @@ class VulnerabilityScanner:
                 logger.debug(f"waybackurls→katana error: {e}")
         
         # Try katana directly on target URL as fallback
-        if check_tool_exists('katana', 'katana -h'):
+        if katana_exists:
             self.log_info("🔍 [KATANA-DIRECT] Running URL crawling with katana directly on target...")
             try:
-                cmd = f"katana -u {self.target_url} 2>&1 | head -500"
+                cmd = f"katana -u {self.target_url} 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
@@ -1494,7 +1536,7 @@ class VulnerabilityScanner:
             self.log_info("🔍 [PARAMSPIDER+KATANA] Running parameter enumeration with paramspider piped to katana...")
             try:
                 domain = get_domain_from_url(self.target_url)
-                cmd = f"paramspider -d {domain} -s 2>/dev/null | katana 2>&1 | head -500"
+                cmd = f"paramspider -d {domain} -s 2>/dev/null | katana 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
@@ -1588,6 +1630,11 @@ class VulnerabilityScanner:
         
         if discovered_params:
             logger.info(f"✅ Discovered {len(discovered_params)} unique parameters: {', '.join(list(discovered_params)[:10])}")
+            if self.silent:
+                print(f"[DEBUG] Discovered {len(discovered_params)} parameters")
+        else:
+            if self.silent:
+                print(f"[DEBUG] No parameters discovered from any sources")
         
         if discovered_urls:
             discovered_urls = list(dict.fromkeys(discovered_urls))
@@ -1619,23 +1666,39 @@ class VulnerabilityScanner:
     def _scan_nuclei(self) -> None:
         """Scan using Nuclei templates for comprehensive vulnerability detection"""
         self.log_info("🔍 [NUCLEI] Starting Nuclei template-based scanning...")
+        if self.silent:
+            print("[DEBUG _scan_nuclei] Starting nuclei scan...")
         
         # Check if nuclei is available
         if not check_tool_exists('nuclei', 'nuclei -version'):
             logger.warning("⚠️  Nuclei not installed. Skipping template-based scanning.")
+            if self.silent:
+                print("[DEBUG _scan_nuclei] Nuclei NOT FOUND - skipping")
             logger.info("   To install: go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest")
             return
         
         try:
+            # Determine nuclei tags based on scan_types
+            if self.scan_types and len(self.scan_types) == 1:
+                # Single vulnerability type - use specific tag
+                scan_type = self.scan_types[0]
+                tags = scan_type if scan_type in ['xss', 'sqli', 'ssrf', 'xxe', 'lfi'] else 'cves,vulnerabilities,misconfigurations'
+            else:
+                # Multiple types or default - use all template categories
+                tags = 'cves,vulnerabilities,misconfigurations'
+            
             # Run nuclei with multiple template categories
             cmd = [
                 'nuclei',
                 '-u', self.target_url,
-                '-t', 'cves,vulnerabilities,misconfigurations',
+                '-tags', tags,
                 '-json',  # JSON output
                 '-severity', 'critical,high,medium',  # Filter by severity
-                '-timeout', str(self.timeout),
             ]
+            
+            # Add timeout only if specified (not unlimited)
+            if self.timeout is not None:
+                cmd.extend(['-timeout', str(self.timeout)])
             
             if self.verbose:
                 logger.info(f"Running: {' '.join(cmd)}")
@@ -1699,17 +1762,30 @@ class VulnerabilityScanner:
             return
         
         try:
+            # Determine nuclei tags based on scan_types
+            if self.scan_types and len(self.scan_types) == 1:
+                # Single vulnerability type - use specific tag
+                scan_type = self.scan_types[0]
+                tags = scan_type if scan_type in ['xss', 'sqli', 'ssrf', 'xxe', 'lfi'] else 'cves,vulnerabilities,misconfigurations'
+            else:
+                # Multiple types or default - use all template categories
+                tags = 'cves,vulnerabilities,misconfigurations,exposures'
+            
             # Advanced nuclei command with more options
             severity = 'critical,high,medium' if self.deep else 'critical,high'
             
             cmd = [
                 'nuclei',
                 '-u', self.target_url,
+                '-tags', tags,
                 '-auto-calibrate',  # Auto calibrate for accuracy
                 '-json',
                 '-severity', severity,
-                '-timeout', str(self.timeout),
             ]
+            
+            # Add timeout only if specified (not unlimited)
+            if self.timeout is not None:
+                cmd.extend(['-timeout', str(self.timeout)])
             
             if self.bypass_waf:
                 cmd.extend(['-retries', '3'])  # Retry for WAF bypass

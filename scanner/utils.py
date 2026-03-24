@@ -152,14 +152,17 @@ def make_http_request(url: str, method: str = 'GET', data: Dict = None, timeout:
         (response_body, status_code, error_message)
     """
     try:
+        # Convert 0 or None to None (unlimited timeout for requests library)
+        request_timeout = None if (timeout is None or timeout == 0) else timeout
+        
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
         
         if method.upper() == 'GET':
-            resp = requests.get(url, headers=headers, timeout=timeout, verify=verify_ssl, allow_redirects=True)
+            resp = requests.get(url, headers=headers, timeout=request_timeout, verify=verify_ssl, allow_redirects=True)
         else:
-            resp = requests.post(url, data=data, headers=headers, timeout=timeout, verify=verify_ssl, allow_redirects=True)
+            resp = requests.post(url, data=data, headers=headers, timeout=request_timeout, verify=verify_ssl, allow_redirects=True)
         
         # Limit response size
         if len(resp.text) > MAX_RESPONSE_SIZE * 1024 * 1024:

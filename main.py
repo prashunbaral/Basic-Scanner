@@ -20,6 +20,48 @@ from scanner.logger import logger
 from scanner.utils import is_valid_url
 
 
+def determine_scan_types(args):
+    """Determine which scan types to run based on command-line arguments"""
+    scan_types = []
+    if args.xss_only:
+        scan_types = ['xss']
+    elif args.sql_only:
+        scan_types = ['sqli']
+    elif args.ssrf_only:
+        scan_types = ['ssrf']
+    elif args.xxe_only:
+        scan_types = ['xxe']
+    elif args.nuclei_only:
+        scan_types = ['nuclei']
+    else:
+        # Default: include all methods
+        scan_types = ['xss', 'sqli', 'ssrf', 'nuclei']
+        
+        # Add enhanced scanning methods based on flags
+        if args.path_xss:
+            scan_types.append('path-xss')
+        if args.custom_param:
+            scan_types.append('custom-param')
+        if args.sqlmap:
+            scan_types.append('sqlmap')
+        if args.param_discovery:
+            scan_types.append('param-discovery')
+        
+        # Deep mode automatically enables path-based XSS, sqlmap, and XXE
+        if args.deep and 'path-xss' not in scan_types:
+            scan_types.append('path-xss')
+        if args.deep and 'xxe' not in scan_types:
+            scan_types.append('xxe')
+        
+        # Aggressive mode enables parameter discovery and XXE
+        if args.aggressive and 'param-discovery' not in scan_types:
+            scan_types.append('param-discovery')
+        if args.aggressive and 'xxe' not in scan_types:
+            scan_types.append('xxe')
+    
+    return scan_types
+
+
 def scan_subdomains_batch(args):
     """Scan multiple subdomains from a file"""
     # Setup logging for batch mode
@@ -49,7 +91,19 @@ def scan_subdomains_batch(args):
         print(f"Scan begun: {len(subdomains)} subdomains")
     else:
         print(f"🔍 Starting batch scan of {len(subdomains)} subdomains")
-        print(f"Flags: {' '.join(['--xss-only', '--deep', '--silent'])}\n")
+        # Show actual flags being used
+        actual_flags = []
+        if args.deep:
+            actual_flags.append('--deep')
+        if args.aggressive:
+            actual_flags.append('--aggressive')
+        if args.bypass_waf:
+            actual_flags.append('--bypass-waf')
+        if args.xss_verbose:
+            actual_flags.append('--xss-verbose')
+        actual_flags.append(f'--threads {args.threads}')
+        actual_flags.append(f'--timeout {args.timeout}')
+        print(f"Flags: {' '.join(actual_flags)}\n")
     
     all_findings = []
     domain_param_seen = set()  # Track (domain, param) pairs to avoid duplicates
@@ -80,8 +134,9 @@ def scan_subdomains_batch(args):
             xss_verbose=args.xss_verbose
         )
         
-        # Run XSS scan
-        findings = scanner.scan(param=None, scan_types=['xss'])
+        # Run scan with the appropriate scan types based on flags
+        scan_types = determine_scan_types(args)
+        findings = scanner.scan(param=None, scan_types=scan_types)
         
         if findings:
             for finding in findings:
@@ -179,7 +234,7 @@ Examples:
     # Advanced options
     parser.add_argument('--param', help='Specific parameter to test (default: all)')
     parser.add_argument('--threads', type=int, default=10, help='Number of concurrent threads (default: 10)')
-    parser.add_argument('--timeout', type=int, default=30, help='Request timeout in seconds (default: 30)')
+    parser.add_argument('--timeout', type=int, default=0, help='Request timeout in seconds (0 = unlimited, default: 0)')
     parser.add_argument('--deep', action='store_true', help='Deep scanning - test more payloads, include path-based and sqlmap')
     parser.add_argument('--aggressive', action='store_true', help='Aggressive mode - ignore rate limits, discover parameters')
     parser.add_argument('--bypass-waf', action='store_true', help='Use WAF bypass techniques')
@@ -244,43 +299,8 @@ Examples:
             sys.exit(1)
         return
     
-    # Determine what to scan
-    scan_types = []
-    if args.xss_only:
-        scan_types = ['xss']
-    elif args.sql_only:
-        scan_types = ['sqli']
-    elif args.ssrf_only:
-        scan_types = ['ssrf']
-    elif args.xxe_only:
-        scan_types = ['xxe']
-    elif args.nuclei_only:
-        scan_types = ['nuclei']
-    else:
-        # Default: include all methods
-        scan_types = ['xss', 'sqli', 'ssrf', 'nuclei']
-        
-        # Add enhanced scanning methods based on flags
-        if args.path_xss:
-            scan_types.append('path-xss')
-        if args.custom_param:
-            scan_types.append('custom-param')
-        if args.sqlmap:
-            scan_types.append('sqlmap')
-        if args.param_discovery:
-            scan_types.append('param-discovery')
-        
-        # Deep mode automatically enables path-based XSS, sqlmap, and XXE
-        if args.deep and 'path-xss' not in scan_types:
-            scan_types.append('path-xss')
-        if args.deep and 'xxe' not in scan_types:
-            scan_types.append('xxe')
-        
-        # Aggressive mode enables parameter discovery and XXE
-        if args.aggressive and 'param-discovery' not in scan_types:
-            scan_types.append('param-discovery')
-        if args.aggressive and 'xxe' not in scan_types:
-            scan_types.append('xxe')
+    # Determine what to scan based on flags
+    scan_types = determine_scan_types(args)
     
     # Run scan
     if args.silent:
