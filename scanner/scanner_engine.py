@@ -165,8 +165,8 @@ class VulnerabilityScanner:
                     logger.info(f"🔗 Testing {len(self.discovered_urls)} discovered URLs for XSS...")
                     self._test_discovered_urls_xss(self.discovered_urls)
         
-        # Run Nuclei-based scanning for comprehensive coverage
-        if 'nuclei' in scan_types or True:  # Always try nuclei if available
+        # Run Nuclei scanning only when explicitly selected by scan_types.
+        if 'nuclei' in scan_types:
             try:
                 if self.deep:
                     self._scan_nuclei_advanced()
@@ -186,6 +186,7 @@ class VulnerabilityScanner:
     def _scan_xss(self, parameters: List[str]):
         """Advanced XSS scanning with marker injection or dangerous payloads based on mode"""
         self.log_info("🔍 [XSS] Starting XSS scan...")
+        self.log_info(f"   Parameters to test: {parameters}")
         
         # In marker mode (default), only test for injectability without dangerous payloads
         if not self.xss_verbose:
@@ -269,12 +270,15 @@ class VulnerabilityScanner:
     
     def _test_discovered_urls_xss(self, urls: List[str]):
         """Test discovered URLs for XSS by injecting markers into their parameters"""
-        logger.info(f"🔗 Testing {len(urls)} discovered URLs for parameter injection...")
+        # Deduplicate while preserving order before exhaustive testing.
+        unique_urls = list(dict.fromkeys(urls))
+        logger.info(f"🔗 Testing {len(unique_urls)} discovered URLs for parameter injection...")
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = []
             
-            for url in urls[:50]:  # Limit to first 50 to avoid excessive testing
+            # Exhaustive mode: test every discovered URL.
+            for url in unique_urls:
                 try:
                     # Extract parameters from this URL
                     parsed = urlparse(url)
@@ -379,31 +383,51 @@ class VulnerabilityScanner:
                 
                 for marker_payload, marker_type in marker_variations:
                     marker_url = inject_payload(self.target_url, param, marker_payload, method='query')
+                    self.log_info(f"📍 Testing {param} with {marker_type} marker: {marker_url[:100]}...")
+                    
                     marker_response, marker_status, marker_error = make_http_request(
                         marker_url,
                         timeout=self.timeout,
                         verify_ssl=False
                     )
                     
-                    if marker_response and self._is_marker_actually_reflected(marker_payload, marker_response, marker_type):
-                        # Parameter is injectable with this specific marker
-                        finding = {
-                            'type': 'INJECTABLE',
-                            'status': '[INJECTABLE]',
-                            'url': self.target_url,
-                            'test_url': marker_url,
-                            'parameter': param,
-                            'payload': marker_payload,
-                            'payload_type': marker_type,
-                            'severity': 'Medium',
-                            'status_code': marker_status,
-                            'proof': f"Parameter reflects user input ({marker_type})",
-                            'timestamp': time.time(),
-                        }
+                    if marker_error:
+                        self.log_info(f"  ⚠️  Error: {marker_error}")
+                        continue
+                    
+                    if not marker_response:
+                        self.log_info(f"  ⚠️  No response")
+                        continue
+                    
+                    self.log_info(f"  ✓ Got response ({marker_status}, {len(marker_response)} bytes)")
+                    
+                    # Check if marker is reflected RAW in response
+                    if marker_payload in marker_response:
+                        self.log_info(f"  ✅ RAW marker found in response!")
                         
-                        logger.info(f"✅ [INJECTABLE] Found injectable parameter: {param} ({marker_type})")
-                        logger.info(f"    URL: {marker_url}")
-                        return finding
+                        if self._is_marker_actually_reflected(marker_payload, marker_response, marker_type):
+                            # Parameter is injectable with this specific marker
+                            finding = {
+                                'type': 'INJECTABLE',
+                                'status': '[INJECTABLE]',
+                                'url': self.target_url,
+                                'test_url': marker_url,
+                                'parameter': param,
+                                'payload': marker_payload,
+                                'payload_type': marker_type,
+                                'severity': 'Medium',
+                                'status_code': marker_status,
+                                'proof': f"Parameter reflects user input ({marker_type})",
+                                'timestamp': time.time(),
+                            }
+                            
+                            logger.info(f"✅ [INJECTABLE] Found injectable parameter: {param} ({marker_type})")
+                            logger.info(f"    URL: {marker_url}")
+                            return finding
+                        else:
+                            self.log_info(f"  ❌ Context validation failed")
+                    else:
+                        self.log_info(f"  ❌ Marker NOT found in response")
                 
                 return None
             
@@ -551,71 +575,33 @@ class VulnerabilityScanner:
     
     def _is_marker_actually_reflected(self, marker: str, response: str, marker_type: str = 'generic') -> bool:
         """
-        Context-aware marker reflection check.
-        Reject encoded reflections and JSON/escaped-string contexts.
-        Accept only HTML-breakout style reflections.
+        Marker reflection check - MUST be raw (unencoded) in HTML source to be exploitable.
+        URL-encoded or HTML-encoded reflections are NOT exploitable for XSS.
         """
-        from urllib.parse import quote
-        import html
-        
-        # First, explicitly reject URL-encoded and HTML-encoded versions
-        # These are NOT exploitable for XSS
-        url_encoded_marker = quote(marker, safe='')
-        html_encoded_marker = html.escape(marker)
-        
-        # If marker is only encoded (not raw), reject.
         if marker not in response:
-            if url_encoded_marker in response or html_encoded_marker in response:
-                return False
+            # Marker not reflected - not exploitable
             return False
         
-        if marker not in response:
-            return False
-
-        # Validate each raw occurrence contextually.
-        marker_len = len(marker)
-        search_from = 0
-        while True:
-            idx = response.find(marker, search_from)
-            if idx == -1:
-                break
-
-            context_start = max(0, idx - 220)
-            context_end = min(len(response), idx + marker_len + 220)
-            context = response[context_start:context_end]
-
-            # Reject common JSON object context: "key":"value"
-            if re.search(r'"[^"]+"\s*:\s*"', context):
-                search_from = idx + marker_len
-                continue
-
-            # Reject escaped-string reflection (common in JSON/JS strings).
-            if idx > 0 and response[idx - 1] == '\\':
-                search_from = idx + marker_len
-                continue
-
-            if marker_type == 'attribute_quote':
-                # Accept only if inside an HTML tag with attributes.
-                local_idx = context.find(marker)
-                left_lt = context.rfind('<', 0, local_idx)
-                right_gt = context.find('>', local_idx)
-                if left_lt != -1 and right_gt != -1:
-                    tag_fragment = context[left_lt:right_gt + 1]
-                    if '=' in tag_fragment:
-                        return True
-            elif marker_type == 'tag_break':
-                # Must reflect as raw tag-break sequence in HTML response.
-                if '><s>superman' in context:
-                    return True
-            else:
-                # Conservative fallback: raw marker in HTML-ish context.
-                if '<' in context and '>' in context:
-                    return True
-
-            search_from = idx + marker_len
+        # Marker IS reflected in raw form - validate it's not a false positive
+        idx = response.find(marker)
         
-        # Raw marker existed, but no exploitable context found.
-        return False
+        # Basic false-positive checks:
+        # 1. Marker preceded by backslash (escaped string)
+        if idx > 0 and response[idx - 1:idx] == '\\':
+            return False
+        
+        # 2. Deep inside JSON object value ("key": "...marker...")
+        context_start = max(0, idx - 150)
+        context_end = min(len(response), idx + len(marker) + 150)
+        context = response[context_start:context_end]
+        
+        # Reject if matches JSON object pattern
+        if re.search(r'"[^"]{1,100}?":\s*"[^"]{0,100}?' + re.escape(marker), context):
+            return False
+        
+        # Otherwise, raw marker is reflected and exploitable
+        logger.debug(f"✓ Raw marker reflected in response at position {idx}")
+        return True
     
     def _verify_xss_execution(self, response: str, payload: str) -> bool:
         """Verify that the reflected payload can actually execute code"""
@@ -1176,12 +1162,22 @@ class VulnerabilityScanner:
     def _scan_custom_parameters(self):
         """Scan by injecting XSS payloads into custom parameters"""
         self.log_info("🔍 [CUSTOM-PARAM] Starting custom parameter injection scanning...")
+
+        # Default xss-only behavior: marker-based probing only (safe, low-noise).
+        # Use dangerous payload set only when user explicitly requests xss_verbose mode.
+        if self.xss_verbose:
+            payloads = CUSTOM_PARAM_PAYLOADS
+        else:
+            payloads = {
+                'tag_break': '"><s>superman',
+                'attribute_quote': '" superman',
+            }
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = []
             
             for param_name in CUSTOM_PARAM_NAMES:
-                for payload_name, payload in CUSTOM_PARAM_PAYLOADS.items():
+                for payload_name, payload in payloads.items():
                     future = executor.submit(self._test_custom_parameter, param_name, payload_name, payload)
                     futures.append(future)
             
@@ -1220,22 +1216,43 @@ class VulnerabilityScanner:
             if not response:
                 return None
             
-            # Check for reflection
-            if self._detect_xss_reflection(payload, response):
-                if self._verify_xss_execution(response, payload):
+            # In default mode, treat this as injectability detection (marker breakout),
+            # not full XSS execution detection.
+            if not self.xss_verbose:
+                if self._is_marker_actually_reflected(payload, response, payload_name):
                     finding = {
-                        'type': 'XSS (Custom Parameter)',
+                        'type': 'INJECTABLE',
+                        'status': '[INJECTABLE]',
                         'url': self.target_url,
+                        'test_url': test_url,
                         'parameter': param_name,
                         'payload': payload,
                         'payload_type': payload_name,
-                        'severity': 'High',
-                        'proof': f'Payload reflected when injected as new parameter: {param_name}',
+                        'severity': 'Medium',
+                        'proof': f'Marker reflected in exploitable HTML context for custom parameter: {param_name}',
                         'timestamp': time.time(),
                     }
-                    
-                    logger.info(f"✅ [CUSTOM-PARAM] Found vulnerability in parameter: {param_name}")
+
+                    logger.info(f"✅ [CUSTOM-PARAM][INJECTABLE] Found injectable custom parameter: {param_name} ({payload_name})")
                     return finding
+            else:
+                # Verbose mode keeps dangerous payload execution checks.
+                if self._detect_xss_reflection(payload, response):
+                    if self._verify_xss_execution(response, payload):
+                        finding = {
+                            'type': 'XSS (Custom Parameter)',
+                            'url': self.target_url,
+                            'test_url': test_url,
+                            'parameter': param_name,
+                            'payload': payload,
+                            'payload_type': payload_name,
+                            'severity': 'High',
+                            'proof': f'Payload reflected when injected as new parameter: {param_name}',
+                            'timestamp': time.time(),
+                        }
+
+                        logger.info(f"✅ [CUSTOM-PARAM] Found vulnerability in parameter: {param_name}")
+                        return finding
         
         except Exception as e:
             logger.debug(f"Error testing custom parameter {param_name}: {e}")
@@ -1524,12 +1541,63 @@ class VulnerabilityScanner:
             
             except Exception as e:
                 logger.debug(f"paramspider→katana error: {e}")
+
+        # Exhaustive ParamSpider expansion across all discovered hosts.
+        # ParamSpider operates at domain scope, so we run it for each unique host found.
+        if check_tool_exists('paramspider', 'paramspider -h'):
+            try:
+                all_hosts = set()
+                all_hosts.add(urlparse(self.target_url).netloc)
+                for u in discovered_urls:
+                    try:
+                        host = urlparse(u).netloc
+                        if host:
+                            all_hosts.add(host)
+                    except Exception:
+                        pass
+
+                if all_hosts:
+                    self.log_info(f"🔍 [PARAMSPIDER-ALL] Running paramspider on {len(all_hosts)} discovered host(s)...")
+
+                for host in sorted(all_hosts):
+                    try:
+                        cmd = f"paramspider -d {host} -s 2>/dev/null | head -2000"
+                        success, result, error = run_command(cmd)
+                        if not success or not result:
+                            continue
+
+                        before_params = len(discovered_params)
+                        before_urls = len(discovered_urls)
+
+                        for line in result.split('\n'):
+                            line = line.strip()
+                            if not line.startswith('http'):
+                                continue
+
+                            discovered_urls.append(line)
+                            try:
+                                parsed = urlparse(line)
+                                params = parse_qs(parsed.query, keep_blank_values=True)
+                                discovered_params.update(params.keys())
+                            except Exception:
+                                pass
+
+                        new_params = len(discovered_params) - before_params
+                        new_urls = len(discovered_urls) - before_urls
+                        if new_urls > 0 or new_params > 0:
+                            logger.info(f"   ✅ ParamSpider-All({host}) found {new_urls} URLs and {new_params} new parameters")
+
+                    except Exception as e:
+                        logger.debug(f"paramspider-all error for {host}: {e}")
+            except Exception as e:
+                logger.debug(f"paramspider-all setup error: {e}")
         
         if discovered_params:
             logger.info(f"✅ Discovered {len(discovered_params)} unique parameters: {', '.join(list(discovered_params)[:10])}")
         
         if discovered_urls:
-            logger.info(f"✅ Discovered {len(discovered_urls)} URLs with parameters")
+            discovered_urls = list(dict.fromkeys(discovered_urls))
+            logger.info(f"✅ Discovered {len(discovered_urls)} unique URLs with parameters")
             # Store URLs for later testing
             self.discovered_urls = discovered_urls
             if self.verbose:
