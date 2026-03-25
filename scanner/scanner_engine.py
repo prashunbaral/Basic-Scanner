@@ -1389,10 +1389,10 @@ class VulnerabilityScanner:
             print(f"[DEBUG] gau exists: {gau_exists}, katana exists: {katana_exists}")
         
         if gau_exists and katana_exists:
-            self.log_info("🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...")
+            self.log_info("🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana (deep crawl)...")
             try:
                 domain = get_domain_from_url(self.target_url)
-                cmd = f"echo '{domain}' | gau | katana 2>&1"
+                cmd = f"echo '{domain}' | gau | katana -depth 3 -jc -c 50 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
@@ -1440,10 +1440,10 @@ class VulnerabilityScanner:
             print(f"[DEBUG] waybackurls exists: {wayback_exists}, katana exists: {katana_exists}")
         
         if wayback_exists and katana_exists:
-            self.log_info("🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana...")
+            self.log_info("🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana (deep crawl)...")
             try:
                 domain = get_domain_from_url(self.target_url)
-                cmd = f"echo '{domain}' | waybackurls | katana 2>&1"
+                cmd = f"echo '{domain}' | waybackurls | katana -depth 3 -jc -c 50 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
@@ -1487,9 +1487,9 @@ class VulnerabilityScanner:
         
         # Try katana directly on target URL as fallback
         if katana_exists:
-            self.log_info("🔍 [KATANA-DIRECT] Running URL crawling with katana directly on target...")
+            self.log_info("🔍 [KATANA-DIRECT] Running URL crawling with katana directly on target (deep crawl)...")
             try:
-                cmd = f"katana -u {self.target_url} 2>&1"
+                cmd = f"katana -u {self.target_url} -depth 3 -jc -c 50 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
@@ -1533,10 +1533,10 @@ class VulnerabilityScanner:
         
         # Try paramspider piped to katana
         if check_tool_exists('paramspider', 'paramspider -h') and check_tool_exists('katana', 'katana -h'):
-            self.log_info("🔍 [PARAMSPIDER+KATANA] Running parameter enumeration with paramspider piped to katana...")
+            self.log_info("🔍 [PARAMSPIDER+KATANA] Running parameter enumeration with paramspider (multi-threaded) piped to katana...")
             try:
                 domain = get_domain_from_url(self.target_url)
-                cmd = f"paramspider -d {domain} -s 2>/dev/null | katana 2>&1"
+                cmd = f"paramspider -d {domain} -l 100 -t 10 -s 2>/dev/null | katana -depth 2 -jc -c 50 2>&1"
                 success, result, error = run_command(cmd)
                 
                 if success and result:
