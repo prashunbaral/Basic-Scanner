@@ -103,26 +103,18 @@ class VulnerabilityScanner:
         if not parameters and not param:
             if not self.silent:
                 logger.warning("⚠️  No parameters found in URL, discovering from domain...")
-            else:
-                print("[DEBUG] No parameters in URL, starting discovery from domain...")
             discovered = self._discover_parameters_with_tools()
             if discovered:
                 # Merge discovered parameters with common parameters
                 parameters = list(set(discovered + common_params))
                 self.log_info(f"✓ Discovered {len(discovered)} parameters from domain, testing {len(parameters)} total with common defaults")
-                if self.silent:
-                    print(f"[DEBUG] Discovered {len(discovered)} parameters, total to test: {len(parameters)}")
                 
                 # Test discovered URLs directly (if any were found during parameter discovery)
                 if hasattr(self, 'discovered_urls') and self.discovered_urls and 'xss' in scan_types:
                     logger.info(f"🔗 Also testing {len(self.discovered_urls)} discovered URLs for XSS injection...")
-                    if self.silent:
-                        print(f"[DEBUG] Will test {len(self.discovered_urls)} discovered URLs for XSS")
             else:
                 if not self.silent:
                     logger.warning("⚠️  No parameters discovered, using common defaults")
-                else:
-                    print(f"[DEBUG] No parameters discovered. Using {len(common_params)} common default parameters")
                 parameters = common_params
         elif parameters:
             # Merge discovered parameters in URL with common parameters
@@ -131,13 +123,9 @@ class VulnerabilityScanner:
             parameters = [param]
         
         logger.info(f"Testing {len(parameters)} parameter(s)")
-        if self.silent:
-            print(f"[DEBUG] Starting XSS scan with {len(parameters)} parameters")
         
         # Run custom payload-based scans
         if 'xss' in scan_types:
-            if self.silent:
-                print(f"[DEBUG] Calling _scan_xss with parameters: {parameters[:5]}...")
             self._scan_xss(parameters)
             
             # Test discovered URLs for XSS
@@ -183,8 +171,6 @@ class VulnerabilityScanner:
         
         # Run Nuclei scanning when explicitly selected OR when XSS is being scanned
         if 'nuclei' in scan_types or 'xss' in scan_types:
-            if self.silent:
-                print(f"[DEBUG] Starting Nuclei scan (deep={self.deep})")
             try:
                 if self.deep:
                     self._scan_nuclei_advanced()
@@ -192,11 +178,7 @@ class VulnerabilityScanner:
                     self._scan_nuclei()
             except Exception as e:
                 logger.debug(f"Nuclei scanning skipped: {e}")
-                if self.silent:
-                    print(f"[DEBUG] Nuclei error: {e}")
         
-        if self.silent:
-            print(f"[DEBUG] Scan complete. Total findings: {len(self.findings)}")
         return self.findings
     
     def _extract_parameters(self) -> List[str]:
@@ -1351,8 +1333,6 @@ class VulnerabilityScanner:
     def _discover_parameters_with_tools(self):
         """Use various tools to discover parameters and URLs"""
         logger.info("🔍 [PARAM-DISCOVERY] Starting parameter discovery...")
-        if self.silent:
-            print("[DEBUG] Starting parameter discovery...")
         
         discovered_params = set()
         discovered_urls = []
@@ -1360,8 +1340,6 @@ class VulnerabilityScanner:
         # Try Playwright spider first for live parameter discovery from navigation
         if not self.silent:
             logger.info("🌐 Attempting Playwright headless browser crawling...")
-        if self.silent:
-            print("[DEBUG] Attempting Playwright headless browser crawling...")
         try:
             spider_result = run_playwright_spider(
                 self.target_url, 
@@ -1385,8 +1363,6 @@ class VulnerabilityScanner:
         # Try gau piped to katana - discovers URLs AND parameters
         gau_exists = check_tool_exists('gau', 'gau --version')
         katana_exists = check_tool_exists('katana', 'katana -h')
-        if self.silent:
-            print(f"[DEBUG] gau exists: {gau_exists}, katana exists: {katana_exists}")
         
         if gau_exists and katana_exists:
             self.log_info("🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana (deep crawl)...")
@@ -1436,8 +1412,6 @@ class VulnerabilityScanner:
         
         # Try waybackurls piped to katana - discovers historical URLs with parameters
         wayback_exists = check_tool_exists('waybackurls', 'waybackurls -h')
-        if self.silent:
-            print(f"[DEBUG] waybackurls exists: {wayback_exists}, katana exists: {katana_exists}")
         
         if wayback_exists and katana_exists:
             self.log_info("🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana (deep crawl)...")
@@ -1630,11 +1604,6 @@ class VulnerabilityScanner:
         
         if discovered_params:
             logger.info(f"✅ Discovered {len(discovered_params)} unique parameters: {', '.join(list(discovered_params)[:10])}")
-            if self.silent:
-                print(f"[DEBUG] Discovered {len(discovered_params)} parameters")
-        else:
-            if self.silent:
-                print(f"[DEBUG] No parameters discovered from any sources")
         
         if discovered_urls:
             discovered_urls = list(dict.fromkeys(discovered_urls))
