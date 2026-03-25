@@ -97,7 +97,7 @@ class VulnerabilityScanner:
         parameters = self._extract_parameters()
         
         # Common parameters to always test
-        common_params = ['id', 'q', 'search', 'name', 'email', 'message', 'xss', 'test', 'debug', 'param', 'value', 'input', 'data', 'payload', 'keyword', 'user', 'username', 'comment', 'callback', 'url', 'redirect', 'return', 'next', 'page', 'category', 'type', 'sort', 'filter', 'tag']
+        common_params = ['id', 'q', 'search', 'name', 'email', 'message', 'xss', 'test', 'debug', 'param', 'value', 'input', 'data', 'payload', 'keyword', 'user', 'username', 'comment', 'callback', 'url', 'redirect', 'return', 'next', 'page', 'category', 'type', 'sort', 'filter', 'tag', 'retUrl', 'returnUrl', 'redirect_uri', 'return_url', 'return_to', 'redirect_to', 'goto', 'back', 'origin', 'referrer', 'ref']
         
         # If no parameters in URL, try parameter discovery
         if not parameters and not param:
