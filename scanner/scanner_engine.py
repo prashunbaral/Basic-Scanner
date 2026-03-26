@@ -375,9 +375,6 @@ class VulnerabilityScanner:
             return None
         self.tested.add(test_hash)
         
-        if self.silent and payload_name == 'marker':
-            print(f"[DEBUG _test_xss] Testing param={param} with marker")
-        
         try:
             # MARKER-BASED DETECTION MODE (default)
             # Only use dangerous payloads if --xss-verbose flag is set
@@ -390,7 +387,6 @@ class VulnerabilityScanner:
                 
                 for marker_payload, marker_type in marker_variations:
                     marker_url = inject_payload(self.target_url, param, marker_payload, method='query')
-                    self.log_info(f"📍 Testing {param} with {marker_type} marker: {marker_url[:100]}...")
                     
                     marker_response, marker_status, marker_error = make_http_request(
                         marker_url,
@@ -399,18 +395,13 @@ class VulnerabilityScanner:
                     )
                     
                     if marker_error:
-                        self.log_info(f"  ⚠️  Error: {marker_error}")
                         continue
                     
                     if not marker_response:
-                        self.log_info(f"  ⚠️  No response")
                         continue
-                    
-                    self.log_info(f"  ✓ Got response ({marker_status}, {len(marker_response)} bytes)")
                     
                     # Check if marker is reflected RAW in response
                     if marker_payload in marker_response:
-                        self.log_info(f"  ✅ RAW marker found in response!")
                         
                         if self._is_marker_actually_reflected(marker_payload, marker_response, marker_type):
                             # Parameter is injectable with this specific marker
@@ -431,11 +422,7 @@ class VulnerabilityScanner:
                             logger.info(f"✅ [INJECTABLE] Found injectable parameter: {param} ({marker_type})")
                             logger.info(f"    URL: {marker_url}")
                             return finding
-                        else:
-                            self.log_info(f"  ❌ Context validation FAILED")
-                    else:
-                        self.log_info(f"  ❌ Marker NOT found in response")
-                
+                    
                 return None
             
             # VERBOSE MODE: Test with dangerous payloads (--xss-verbose)
