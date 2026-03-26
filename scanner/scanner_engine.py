@@ -646,7 +646,7 @@ class VulnerabilityScanner:
         
         # Pattern 5: Unquoted JavaScript (JSON object value, URL parameter value, etc)
         # e.g., {path: /documents/2026/2/12/...?cache-buster=batmann1&path=superman}
-        if re.search(rf':\s*[^"\'{{\[,]*{re.escape(marker)}[^"\'{{\]},]*[,\]}}]', response):
+        if re.search(rf':\s*[^"\'{{\[,]*{re.escape(marker)}[^"\'{{\]}}]*[,\]}}]', response):
             return "javascript_unquoted"
         
         # Default: just plain HTML
