@@ -8,10 +8,12 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 OUTPUT_DIR = PROJECT_ROOT / "output"
 TEMPLATES_DIR = PROJECT_ROOT / "templates"
+DISCOVERY_OUTPUT_DIR = OUTPUT_DIR / "discovery"
 
 # Create directories if they don't exist
 OUTPUT_DIR.mkdir(exist_ok=True)
 TEMPLATES_DIR.mkdir(exist_ok=True)
+DISCOVERY_OUTPUT_DIR.mkdir(exist_ok=True)
 
 # ============ TOOL CONFIGURATION ============
 
