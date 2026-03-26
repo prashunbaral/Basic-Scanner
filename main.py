@@ -24,49 +24,60 @@ from scanner.utils import is_valid_url
 def determine_scan_types(args):
     """Determine which scan types to run based on command-line arguments"""
     scan_types = []
-    if args.xss_only:
-        scan_types = ['xss']
-    elif args.xss_nuclei:
-        scan_types = ['xss', 'nuclei']
-    elif args.nuclei:
-        scan_types = ['nuclei-full']
-    elif args.nuclei_cves:
-        scan_types = ['nuclei-cves']
-    elif args.sql_only:
-        scan_types = ['sqli']
-    elif args.ssrf_only:
-        scan_types = ['ssrf']
-    elif args.xxe_only:
-        scan_types = ['xxe']
-    elif args.nuclei_only:
-        scan_types = ['nuclei']
-    else:
+
+    selector_flags = [
+        args.xss_only,
+        args.xss_nuclei,
+        args.sql_only,
+        args.ssrf_only,
+        args.xxe_only,
+        args.nuclei_only,
+        args.nuclei,
+        args.nuclei_cves,
+    ]
+
+    if not any(selector_flags):
         # Default: include all methods
         scan_types = ['xss', 'sqli', 'ssrf', 'nuclei']
-        
-        # Add enhanced scanning methods based on flags
-        if args.path_xss:
-            scan_types.append('path-xss')
-        if args.custom_param:
-            scan_types.append('custom-param')
-        if args.sqlmap:
-            scan_types.append('sqlmap')
-        if args.param_discovery:
-            scan_types.append('param-discovery')
-        
-        # Deep mode automatically enables path-based XSS, sqlmap, and XXE
-        if args.deep and 'path-xss' not in scan_types:
-            scan_types.append('path-xss')
-        if args.deep and 'xxe' not in scan_types:
+    else:
+        if args.xss_only or args.xss_nuclei:
+            scan_types.append('xss')
+        if args.sql_only:
+            scan_types.append('sqli')
+        if args.ssrf_only:
+            scan_types.append('ssrf')
+        if args.xxe_only:
             scan_types.append('xxe')
-        
-        # Aggressive mode enables parameter discovery and XXE
-        if args.aggressive and 'param-discovery' not in scan_types:
-            scan_types.append('param-discovery')
-        if args.aggressive and 'xxe' not in scan_types:
-            scan_types.append('xxe')
-    
-    return scan_types
+        if args.nuclei_only or args.xss_nuclei:
+            scan_types.append('nuclei')
+        if args.nuclei:
+            scan_types.append('nuclei-full')
+        if args.nuclei_cves:
+            scan_types.append('nuclei-cves')
+
+    # Add enhanced scanning methods based on flags
+    if args.path_xss and 'path-xss' not in scan_types:
+        scan_types.append('path-xss')
+    if args.custom_param and 'custom-param' not in scan_types:
+        scan_types.append('custom-param')
+    if args.sqlmap and 'sqlmap' not in scan_types:
+        scan_types.append('sqlmap')
+    if args.param_discovery and 'param-discovery' not in scan_types:
+        scan_types.append('param-discovery')
+
+    # Deep mode automatically enables path-based XSS and XXE
+    if args.deep and 'path-xss' not in scan_types:
+        scan_types.append('path-xss')
+    if args.deep and 'xxe' not in scan_types:
+        scan_types.append('xxe')
+
+    # Aggressive mode enables parameter discovery and XXE
+    if args.aggressive and 'param-discovery' not in scan_types:
+        scan_types.append('param-discovery')
+    if args.aggressive and 'xxe' not in scan_types:
+        scan_types.append('xxe')
+
+    return list(dict.fromkeys(scan_types))
 
 
 def scan_subdomains_batch(args):
