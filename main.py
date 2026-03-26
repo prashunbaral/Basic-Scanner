@@ -16,6 +16,7 @@ import argparse
 import sys
 import logging
 import os
+import concurrent.futures
 from pathlib import Path
 from scanner.logger import logger
 from scanner.utils import is_valid_url
@@ -131,23 +132,25 @@ def scan_subdomains_batch(args):
         actual_flags.append(f'--timeout {args.timeout}')
         print(f"Flags: {' '.join(actual_flags)}\n")
     
+    scan_types = determine_scan_types(args)
     all_findings = []
     domain_param_seen = set()  # Track (domain, param) pairs to avoid duplicates
-    scan_types = determine_scan_types(args)
-    
-    for i, subdomain in enumerate(subdomains, 1):
-        # Ensure subdomain has protocol
-        if not subdomain.startswith(('http://', 'https://')):
-            url = f'https://{subdomain}'
-        else:
-            url = subdomain
-        
-        if not args.silent:
-            print(f"[{i}/{len(subdomains)}] Scanning {url}...")
-        
-        # Create a temporary args object for this subdomain
+    printed_findings = 0
+
+    def batch_worker_count() -> int:
+        has_nuclei = any(scan in scan_types for scan in ['nuclei', 'nuclei-full', 'nuclei-cves'])
+        if args.update_nuclei_templates or args.update_nuclei:
+            return 1
+        if has_nuclei:
+            return max(1, min(2, args.threads // 5 if args.threads > 4 else 1))
+        return max(1, min(4, args.threads))
+
+    def run_single_subdomain(index_and_subdomain):
+        i, subdomain = index_and_subdomain
+        url = f'https://{subdomain}' if not subdomain.startswith(('http://', 'https://')) else subdomain
+
         from scanner.scanner_engine import VulnerabilityScanner
-        
+
         scanner = VulnerabilityScanner(
             target_url=url,
             threads=args.threads,
@@ -156,62 +159,108 @@ def scan_subdomains_batch(args):
             aggressive=args.aggressive,
             bypass_waf=args.bypass_waf,
             verbose=False,
-            silent=True,  # Always silent for batch
+            silent=True,  # Keep internals quiet; batch loop prints summaries.
             live_output=False,
             xss_verbose=args.xss_verbose,
             update_nuclei_templates=args.update_nuclei_templates,
             update_nuclei=args.update_nuclei,
             discovery_cache=args.discovery_cache
         )
-        
-        # Run scan with the appropriate scan types based on flags
-        findings = scanner.scan(param=None, scan_types=scan_types)
 
-        if not args.silent:
-            host_findings = len(findings)
-            discovered_urls = len(getattr(scanner, 'discovered_urls', []) or [])
-            discovered_params = len(getattr(scanner, 'discovered_param_records', []) or [])
-            cache_dir = getattr(scanner, 'discovery_output_dir', None)
-            cache_part = f" | cache={cache_dir}" if cache_dir else ""
-            print(
-                f"    done | findings={host_findings} | discovered_urls={discovered_urls} "
-                f"| discovered_params={discovered_params} | scans={','.join(scan_types)}{cache_part}"
-            )
-        
-        if findings:
-            for finding in findings:
-                finding['subdomain'] = subdomain
-                all_findings.append(finding)
-                
-                # Debug: Log the complete finding for diagnostics
-                param = finding.get('parameter', 'UNKNOWN_PARAM')
-                test_url = finding.get('test_url', '')
-                payload = finding.get('payload', '')
-                payload_type = finding.get('payload_type', 'unknown')
-                base_url = finding.get('url', subdomain)
-                
-                # Deduplication: track (domain, parameter) pairs
-                domain_base = base_url.split('?')[0].split('#')[0]
-                dedup_key = f"{domain_base}:{param}"
-                
-                # Only print if we haven't seen this exact (domain, parameter) pair before
-                if dedup_key not in domain_param_seen:
-                    domain_param_seen.add(dedup_key)
-                    
-                    # Show the actual test URL if it exists, otherwise construct it
-                    if test_url and '?' in test_url:
-                        display_url = test_url
-                    else:
-                        # Fallback: construct the URL with parameter
-                        display_url = f"{base_url}?{param}={payload}"
-                    
+        findings = scanner.scan(param=None, scan_types=scan_types)
+        return {
+            'index': i,
+            'subdomain': subdomain,
+            'url': url,
+            'findings': findings,
+            'discovered_urls': len(getattr(scanner, 'discovered_urls', []) or []),
+            'discovered_params': len(getattr(scanner, 'discovered_param_records', []) or []),
+            'cache_dir': getattr(scanner, 'discovery_output_dir', None),
+            'source_counts': getattr(scanner, 'discovery_source_counts', {}) or {},
+        }
+
+    worker_count = batch_worker_count()
+
+    if not args.silent and worker_count > 1:
+        print(f"Batch workers: {worker_count}\n")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
+        for result in executor.map(run_single_subdomain, enumerate(subdomains, 1)):
+            subdomain = result['subdomain']
+            findings = result['findings']
+
+            if not args.silent:
+                print(f"[{result['index']}/{len(subdomains)}] Scanning {result['url']}...")
+                source_parts = []
+                for source in sorted(result['source_counts'].keys()):
+                    counts = result['source_counts'][source]
+                    source_parts.append(f"{source}:u{counts.get('urls', 0)}/p{counts.get('params', 0)}")
+                source_part = f" | sources={','.join(source_parts)}" if source_parts else ""
+                cache_part = f" | cache={result['cache_dir']}" if result['cache_dir'] else ""
+                printable_count = 0
+                for finding in findings:
                     status = finding.get('status', finding.get('type', 'FINDING'))
-                    print(f"[{status}] {display_url} | param={param} | type={payload_type}")
+                    if status == 'NUCLEI':
+                        printable_count += 1
+                        continue
+                    param = finding.get('parameter', 'UNKNOWN_PARAM')
+                    base_url = finding.get('url', subdomain)
+                    domain_base = base_url.split('?')[0].split('#')[0]
+                    dedup_key = f"{domain_base}:{param}"
+                    if dedup_key not in domain_param_seen:
+                        printable_count += 1
+                print(
+                    f"    done | findings={len(findings)} | printed={printable_count} | discovered_urls={result['discovered_urls']} "
+                    f"| discovered_params={result['discovered_params']} | scans={','.join(scan_types)}"
+                    f"{source_part}{cache_part}"
+                )
+
+            if findings:
+                for finding in findings:
+                    finding['subdomain'] = subdomain
+                    all_findings.append(finding)
+
+                    status = finding.get('status', finding.get('type', 'FINDING'))
+                    if status == 'NUCLEI':
+                        matched_url = finding.get('url', subdomain)
+                        severity = finding.get('severity', 'Unknown')
+                        template_id = finding.get('template_id', 'N/A')
+                        cve = finding.get('cve')
+                        if cve:
+                            print(f"[NUCLEI-CVE] {matched_url} | severity={severity} | template={template_id} | cve={cve}")
+                        else:
+                            print(f"[NUCLEI] {matched_url} | severity={severity} | template={template_id}")
+                        printed_findings += 1
+                        continue
+
+                    param = finding.get('parameter', 'UNKNOWN_PARAM')
+                    test_url = finding.get('test_url', '')
+                    payload = finding.get('payload', '')
+                    payload_type = finding.get('payload_type', 'unknown')
+                    base_url = finding.get('url', subdomain)
+
+                    domain_base = base_url.split('?')[0].split('#')[0]
+                    dedup_key = f"{domain_base}:{param}"
+
+                    if dedup_key not in domain_param_seen:
+                        domain_param_seen.add(dedup_key)
+                        printed_findings += 1
+
+                        if test_url and '?' in test_url:
+                            display_url = test_url
+                        else:
+                            display_url = f"{base_url}?{param}={payload}"
+
+                        status = finding.get('status', finding.get('type', 'FINDING'))
+                        print(f"[{status}] {display_url} | param={param} | type={payload_type}")
     
     # Print summary
     if not args.silent:
         print(f"\n{'='*70}")
-        print(f"✅ Batch scan complete - Found {len(all_findings)} vulnerabilities across {len(subdomains)} subdomains")
+        print(
+            f"✅ Batch scan complete - Found {len(all_findings)} raw findings, "
+            f"printed {printed_findings} findings across {len(subdomains)} subdomains"
+        )
         print(f"{'='*70}\n")
     
     # Save results if requested

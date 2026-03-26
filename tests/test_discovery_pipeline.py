@@ -157,6 +157,26 @@ class DiscoveryPipelineTests(unittest.TestCase):
             self.assertEqual(result['urls'], ['https://example.com/path?q=1'])
             self.assertEqual(result['parameters'], ['q'])
 
+    @patch('scanner.modules.discovery_pipeline.run_command')
+    @patch('scanner.modules.discovery_pipeline.check_tool_exists', return_value=True)
+    def test_collect_gau_records_ignores_warning_lines_and_keeps_urls(self, _mock_tool_exists, mock_run_command):
+        mock_run_command.return_value = (
+            True,
+            (
+                'time="2026-03-26T20:52:37+05:45" level=warning msg="error reading config"\n'
+                'https://www.rijksoverheid.nl/sitemap\n'
+                'https://www.rijksoverheid.nl/toegankelijkheid\n'
+            ),
+            '',
+        )
+
+        records = self.pipeline._collect_gau_records('rijksoverheid.nl')
+        urls = [record.normalized_url for record in records]
+
+        self.assertEqual(len(records), 2)
+        self.assertIn('https://www.rijksoverheid.nl/sitemap', urls)
+        self.assertIn('https://www.rijksoverheid.nl/toegankelijkheid', urls)
+
 
 if __name__ == '__main__':
     unittest.main()

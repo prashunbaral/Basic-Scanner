@@ -38,8 +38,8 @@ def run_command(command: str, timeout: int = TIMEOUT, retry: bool = True) -> Tup
     attempts = 0
     last_error = None
     
-    # Handle None timeout (run indefinitely)
-    actual_timeout = timeout if timeout is not None else 86400  # 24 hours as fallback
+    # None/0 means no timeout. Let the command finish naturally.
+    actual_timeout = None if (timeout is None or timeout == 0) else timeout
     
     while attempts < MAX_RETRIES:
         try:
@@ -62,7 +62,8 @@ def run_command(command: str, timeout: int = TIMEOUT, retry: bool = True) -> Tup
                 if retry:
                     time.sleep(2 ** attempts)  # Exponential backoff
         except subprocess.TimeoutExpired:
-            last_error = f"Command timeout ({actual_timeout}s)"
+            timeout_label = "no timeout" if actual_timeout is None else f"{actual_timeout}s"
+            last_error = f"Command timeout ({timeout_label})"
             attempts += 1
         except Exception as e:
             last_error = str(e)

@@ -57,6 +57,7 @@ class VulnerabilityScanner:
         self.discovered_url_records = []
         self.discovered_param_records = []
         self.discovery_output_dir = None
+        self.discovery_source_counts = {}
         self.scan_types = []  # Store scan types for nuclei tag filtering
         self.baseline_cache = {}
         self.nuclei_help_cache = None
@@ -732,7 +733,7 @@ class VulnerabilityScanner:
         result = run_playwright_dom_verification(
             test_url,
             selectors=selectors,
-            timeout=self.timeout or 15,
+            timeout=self.timeout,
             silent=self.silent,
         )
         if result.get('error'):
@@ -1120,7 +1121,7 @@ class VulnerabilityScanner:
             test_url = inject_payload(self.target_url, param, payload, method='query')
             
             start_time = time.time()
-            response, status, _ = make_http_request(test_url, timeout=10, verify_ssl=False)
+            response, status, _ = make_http_request(test_url, timeout=self.timeout, verify_ssl=False)
             elapsed = time.time() - start_time
             
             # If response took at least 4 seconds, likely time-based SQLi
@@ -1526,6 +1527,7 @@ class VulnerabilityScanner:
             verbose=self.verbose,
             silent=self.silent,
             discovery_cache=self.discovery_cache,
+            workers=self.threads,
         )
 
         try:
@@ -1538,6 +1540,7 @@ class VulnerabilityScanner:
         self.discovered_param_records = result.get('parameter_records', [])
         self.discovered_urls = result.get('urls', [])
         self.discovery_output_dir = result.get('output_dir')
+        self.discovery_source_counts = result.get('source_counts', {})
 
         discovered_params = result.get('parameters', [])
 
@@ -1576,7 +1579,7 @@ class VulnerabilityScanner:
         if self.nuclei_help_cache is not None and not refresh:
             return self.nuclei_help_cache
 
-        success, result, error = run_command('nuclei -h', timeout=20, retry=False)
+        success, result, error = run_command('nuclei -h', timeout=self.timeout, retry=False)
         self.nuclei_help_cache = result or ""
         if not success and not self.nuclei_help_cache:
             logger.debug(f"Unable to fetch nuclei help output: {error}")

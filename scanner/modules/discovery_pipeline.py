@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import re
 import time
+import concurrent.futures
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -55,13 +56,15 @@ class DiscoveryPipeline:
         timeout: Optional[int],
         verbose: bool = False,
         silent: bool = False,
-        discovery_cache: Optional[str] = None
+        discovery_cache: Optional[str] = None,
+        workers: int = 5,
     ):
         self.target_url = target_url
         self.timeout = timeout
         self.verbose = verbose
         self.silent = silent
         self.discovery_cache = discovery_cache
+        self.workers = max(1, workers)
         self.records: List[DiscoveryRecord] = []
         self.param_records: List[Dict] = []
         self.js_urls: List[str] = []
@@ -86,6 +89,14 @@ class DiscoveryPipeline:
         return self._result_payload(loaded_from_cache=False)
 
     def _result_payload(self, loaded_from_cache: bool) -> Dict:
+        source_counts: Dict[str, Dict[str, int]] = {}
+        for record in self.records:
+            bucket = source_counts.setdefault(record.source, {'urls': 0, 'params': 0})
+            bucket['urls'] += 1
+        for record in self.param_records:
+            bucket = source_counts.setdefault(record['source'], {'urls': 0, 'params': 0})
+            bucket['params'] += 1
+
         return {
             'records': [asdict(record) for record in self.records],
             'urls': [record.normalized_url for record in self.records],
@@ -94,6 +105,7 @@ class DiscoveryPipeline:
             'js_urls': list(self.js_urls),
             'output_dir': self.output_dir,
             'loaded_from_cache': loaded_from_cache,
+            'source_counts': source_counts,
         }
 
     def _log(self, message: str) -> None:
@@ -120,7 +132,10 @@ class DiscoveryPipeline:
 
         scheme = parsed.scheme.lower() or 'https'
         host = parsed.hostname.lower() if parsed.hostname else parsed.netloc.lower()
-        port = parsed.port
+        try:
+            port = parsed.port
+        except ValueError:
+            return None
         if port and not ((scheme == 'http' and port == 80) or (scheme == 'https' and port == 443)):
             host = f"{host}:{port}"
 
@@ -180,7 +195,7 @@ class DiscoveryPipeline:
         try:
             result = run_playwright_spider(
                 self.target_url,
-                timeout=self.timeout or 30,
+                timeout=self.timeout,
                 max_pages=20,
                 verbose=self.verbose,
                 silent=self.silent,
@@ -210,9 +225,16 @@ class DiscoveryPipeline:
 
         records: List[DiscoveryRecord] = []
         for line in output.splitlines():
-            record = self._build_record(line.strip(), source='gau', discovery_type='historical_url')
-            if record:
-                records.append(record)
+            line = line.strip()
+            if not line:
+                continue
+            urls = URL_PATTERN.findall(line)
+            if not urls and line.startswith(('http://', 'https://')):
+                urls = [line]
+            for url in urls:
+                record = self._build_record(url, source='gau', discovery_type='historical_url')
+                if record:
+                    records.append(record)
         self._log(f"✅ [DISCOVERY] gau produced {len(records)} URL records")
         return records
 
@@ -226,9 +248,16 @@ class DiscoveryPipeline:
 
         records: List[DiscoveryRecord] = []
         for line in output.splitlines():
-            record = self._build_record(line.strip(), source='waybackurls', discovery_type='historical_url')
-            if record:
-                records.append(record)
+            line = line.strip()
+            if not line:
+                continue
+            urls = URL_PATTERN.findall(line)
+            if not urls and line.startswith(('http://', 'https://')):
+                urls = [line]
+            for url in urls:
+                record = self._build_record(url, source='waybackurls', discovery_type='historical_url')
+                if record:
+                    records.append(record)
         self._log(f"✅ [DISCOVERY] waybackurls produced {len(records)} URL records")
         return records
 
@@ -313,29 +342,65 @@ class DiscoveryPipeline:
         return urls
 
     def _expand_parameters_from_responses(self) -> None:
-        for record in list(self.records):
+        base_records = list(self.records)
+
+        for record in base_records:
             for param_name in record.param_names:
                 self._record_param(param_name, source=record.source, discovery_type='query_param', url=record.normalized_url)
 
-            response, _, error = make_http_request(record.normalized_url, timeout=self.timeout, verify_ssl=False)
-            if error or not response:
-                continue
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.workers) as executor:
+            futures = {
+                executor.submit(self._fetch_and_extract_from_record, record): record
+                for record in base_records
+            }
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    new_records, new_params, new_js_urls = future.result()
+                    if new_records:
+                        self.records.extend(new_records)
+                    if new_params:
+                        self.param_records.extend(new_params)
+                    if new_js_urls:
+                        self.js_urls.extend(new_js_urls)
+                except Exception as e:
+                    if self.verbose:
+                        logger.debug(f"Response expansion error: {e}")
 
-            self._extract_params_from_html(record.normalized_url, response, record.source)
+    def _fetch_and_extract_from_record(self, record: DiscoveryRecord):
+        response, _, error = make_http_request(record.normalized_url, timeout=self.timeout, verify_ssl=False)
+        if error or not response:
+            return [], [], []
+        return self._extract_from_html_content(record.normalized_url, response, record.source)
 
     def _extract_params_from_html(self, base_url: str, html_content: str, source: str) -> None:
+        new_records, new_params, new_js_urls = self._extract_from_html_content(base_url, html_content, source)
+        self.records.extend(new_records)
+        self.param_records.extend(new_params)
+        self.js_urls.extend(new_js_urls)
+
+    def _extract_from_html_content(self, base_url: str, html_content: str, source: str):
         soup = BeautifulSoup(html_content, 'lxml')
+        new_records: List[DiscoveryRecord] = []
+        new_params: List[Dict] = []
+        new_js_urls: List[str] = []
 
         for form in soup.find_all('form'):
             action = form.get('action') or base_url
             action_url = urljoin(base_url, action)
             form_record = self._build_record(action_url, source=source, discovery_type='form_action')
             if form_record:
-                self.records.append(form_record)
+                new_records.append(form_record)
 
             for field in form.find_all(['input', 'textarea', 'select']):
                 name = field.get('name') or field.get('id')
-                self._record_param(name, source=source, discovery_type='form_field', url=action_url)
+                if name:
+                    new_params.append({
+                        'name': name,
+                        'source': source,
+                        'discovery_type': 'form_field',
+                        'url': action_url,
+                        'metadata': {},
+                    })
 
         for anchor in soup.find_all(['a', 'link']):
             href = anchor.get('href')
@@ -344,24 +409,32 @@ class DiscoveryPipeline:
             anchor_url = urljoin(base_url, href)
             record = self._build_record(anchor_url, source=source, discovery_type='html_link')
             if record:
-                self.records.append(record)
+                new_records.append(record)
 
         for script in soup.find_all('script'):
             src = script.get('src')
             if src:
                 js_url = urljoin(base_url, src)
-                self.js_urls.append(js_url)
+                new_js_urls.append(js_url)
                 js_record = self._build_record(js_url, source=source, discovery_type='script_src')
                 if js_record:
-                    self.records.append(js_record)
+                    new_records.append(js_record)
             else:
                 script_text = script.get_text(" ", strip=False)
                 for param in self._extract_params_from_js(script_text):
-                    self._record_param(param, source=source, discovery_type='inline_script', url=base_url)
+                    new_params.append({
+                        'name': param,
+                        'source': source,
+                        'discovery_type': 'inline_script',
+                        'url': base_url,
+                        'metadata': {},
+                    })
                 for url in URL_PATTERN.findall(script_text):
                     script_record = self._build_record(urljoin(base_url, url), source=source, discovery_type='inline_script_url')
                     if script_record:
-                        self.records.append(script_record)
+                        new_records.append(script_record)
+
+        return new_records, new_params, new_js_urls
 
     def _analyze_linked_js(self) -> None:
         unique_js_urls = list(dict.fromkeys(self.js_urls))

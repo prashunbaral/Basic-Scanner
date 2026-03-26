@@ -128,14 +128,20 @@ class SilentModeOutputTests(unittest.TestCase):
             self.discovered_urls = ['https://example.com/a', 'https://example.com/b']
             self.discovered_param_records = [{'name': 'q'}, {'name': 'id'}]
             self.discovery_output_dir = '/tmp/discovery'
+            self.discovery_source_counts = {
+                'gau': {'urls': 2, 'params': 1},
+                'katana': {'urls': 1, 'params': 1},
+            }
 
         with patch('scanner.scanner_engine.VulnerabilityScanner.__init__', new=init_side_effect):
             buf = io.StringIO()
             with redirect_stdout(buf):
                 main.scan_subdomains_batch(args)
         output = buf.getvalue()
-        self.assertIn('done | findings=0 | discovered_urls=2 | discovered_params=2 | scans=xss', output)
+        self.assertIn('done | findings=0 | printed=0 | discovered_urls=2 | discovered_params=2 | scans=xss', output)
+        self.assertIn('sources=gau:u2/p1,katana:u1/p1', output)
         self.assertIn('cache=/tmp/discovery', output)
+        self.assertIn('Found 0 raw findings, printed 0 findings', output)
 
     @patch('scanner.scanner_engine.VulnerabilityScanner.scan', return_value=[])
     def test_batch_silent_shows_no_progress_lines(self, mock_scan):
@@ -176,6 +182,7 @@ class SilentModeOutputTests(unittest.TestCase):
             self.discovered_urls = ['https://example.com/a']
             self.discovered_param_records = [{'name': 'q'}]
             self.discovery_output_dir = '/tmp/discovery'
+            self.discovery_source_counts = {'gau': {'urls': 1, 'params': 1}}
 
         with patch('scanner.scanner_engine.VulnerabilityScanner.__init__', new=init_side_effect):
             buf = io.StringIO()
