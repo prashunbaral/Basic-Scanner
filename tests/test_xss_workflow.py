@@ -1,4 +1,5 @@
 import io
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
@@ -85,6 +86,104 @@ class SilentModeOutputTests(unittest.TestCase):
         with patch('sys.argv', ['main.py', 'https://example.com', '--silent']), redirect_stdout(buf):
             main.main()
         self.assertEqual(buf.getvalue(), '')
+
+    @patch('scanner.scanner_engine.VulnerabilityScanner.scan')
+    @patch('scanner.scanner_engine.VulnerabilityScanner.__init__', return_value=None)
+    def test_batch_non_silent_shows_per_host_stats(self, _mock_init, mock_scan):
+        mock_scan.return_value = []
+        with tempfile.NamedTemporaryFile('w', delete=False) as tmp:
+            tmp.write('example.com\n')
+            tmp_path = tmp.name
+
+        args = main.argparse.Namespace(
+            subdomains=tmp_path,
+            silent=False,
+            deep=False,
+            aggressive=False,
+            bypass_waf=False,
+            xss_verbose=False,
+            nuclei=False,
+            nuclei_cves=False,
+            update_nuclei_templates=False,
+            update_nuclei=False,
+            discovery_cache=None,
+            threads=10,
+            timeout=0,
+            xss_only=True,
+            xss_nuclei=False,
+            sql_only=False,
+            ssrf_only=False,
+            xxe_only=False,
+            nuclei_only=False,
+            path_xss=False,
+            custom_param=False,
+            sqlmap=False,
+            param_discovery=False,
+            all=False,
+            json=None,
+            output=None,
+        )
+
+        def init_side_effect(self, *args, **kwargs):
+            self.discovered_urls = ['https://example.com/a', 'https://example.com/b']
+            self.discovered_param_records = [{'name': 'q'}, {'name': 'id'}]
+            self.discovery_output_dir = '/tmp/discovery'
+
+        with patch('scanner.scanner_engine.VulnerabilityScanner.__init__', new=init_side_effect):
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                main.scan_subdomains_batch(args)
+        output = buf.getvalue()
+        self.assertIn('done | findings=0 | discovered_urls=2 | discovered_params=2 | scans=xss', output)
+        self.assertIn('cache=/tmp/discovery', output)
+
+    @patch('scanner.scanner_engine.VulnerabilityScanner.scan', return_value=[])
+    def test_batch_silent_shows_no_progress_lines(self, mock_scan):
+        with tempfile.NamedTemporaryFile('w', delete=False) as tmp:
+            tmp.write('example.com\n')
+            tmp_path = tmp.name
+
+        args = main.argparse.Namespace(
+            subdomains=tmp_path,
+            silent=True,
+            deep=False,
+            aggressive=False,
+            bypass_waf=False,
+            xss_verbose=False,
+            nuclei=False,
+            nuclei_cves=False,
+            update_nuclei_templates=False,
+            update_nuclei=False,
+            discovery_cache=None,
+            threads=10,
+            timeout=0,
+            xss_only=True,
+            xss_nuclei=False,
+            sql_only=False,
+            ssrf_only=False,
+            xxe_only=False,
+            nuclei_only=False,
+            path_xss=False,
+            custom_param=False,
+            sqlmap=False,
+            param_discovery=False,
+            all=False,
+            json=None,
+            output=None,
+        )
+
+        def init_side_effect(self, *args, **kwargs):
+            self.discovered_urls = ['https://example.com/a']
+            self.discovered_param_records = [{'name': 'q'}]
+            self.discovery_output_dir = '/tmp/discovery'
+
+        with patch('scanner.scanner_engine.VulnerabilityScanner.__init__', new=init_side_effect):
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                main.scan_subdomains_batch(args)
+        output = buf.getvalue()
+        self.assertNotIn('Scanning https://example.com', output)
+        self.assertNotIn('done | findings=', output)
 
 
 class CompatibilityShimTests(unittest.TestCase):

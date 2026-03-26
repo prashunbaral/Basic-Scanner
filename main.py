@@ -133,6 +133,7 @@ def scan_subdomains_batch(args):
     
     all_findings = []
     domain_param_seen = set()  # Track (domain, param) pairs to avoid duplicates
+    scan_types = determine_scan_types(args)
     
     for i, subdomain in enumerate(subdomains, 1):
         # Ensure subdomain has protocol
@@ -164,8 +165,18 @@ def scan_subdomains_batch(args):
         )
         
         # Run scan with the appropriate scan types based on flags
-        scan_types = determine_scan_types(args)
         findings = scanner.scan(param=None, scan_types=scan_types)
+
+        if not args.silent:
+            host_findings = len(findings)
+            discovered_urls = len(getattr(scanner, 'discovered_urls', []) or [])
+            discovered_params = len(getattr(scanner, 'discovered_param_records', []) or [])
+            cache_dir = getattr(scanner, 'discovery_output_dir', None)
+            cache_part = f" | cache={cache_dir}" if cache_dir else ""
+            print(
+                f"    done | findings={host_findings} | discovered_urls={discovered_urls} "
+                f"| discovered_params={discovered_params} | scans={','.join(scan_types)}{cache_part}"
+            )
         
         if findings:
             for finding in findings:
