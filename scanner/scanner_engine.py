@@ -512,20 +512,7 @@ class VulnerabilityScanner:
                         logger.info(f"    URL: {test_url}")
                         return finding
                 
-                return self._apply_confidence({
-                    'type': 'REFLECTION',
-                    'status': 'REFLECTION',
-                    'url': self.target_url,
-                    'test_url': marker_url,
-                    'parameter': param,
-                    'payload': harmless_marker,
-                    'payload_type': 'marker',
-                    'context': context,
-                    'severity': 'Low',
-                    'status_code': marker_status,
-                    'proof': f"Marker reflected in {context} context but no HTML structural breakout confirmed",
-                    'timestamp': time.time(),
-                }, base_confidence='low')
+                return None
             
             # VERBOSE MODE: Test with dangerous payloads (--xss-verbose)
             # Only activated when user provides complete URL with parameters
@@ -572,24 +559,7 @@ class VulnerabilityScanner:
                     )
                     
                     if marker_response and 'superman' in marker_response:
-                        # Marker reflects - this is a reflection vulnerability, not XSS
-                        finding = self._apply_confidence({
-                            'type': 'REFLECTION',
-                            'status': 'REFLECTION',
-                            'url': self.target_url,
-                            'test_url': marker_url,
-                            'parameter': param,
-                            'payload': marker_payload,
-                            'payload_type': 'marker',
-                            'severity': 'Medium',
-                            'status_code': marker_status,
-                            'proof': f"Marker reflected (XSS payload blocked)",
-                            'timestamp': time.time(),
-                        }, base_confidence='low')
-                        
-                        logger.info(f"⚠️  [REFLECTION] Found reflection vulnerability: {param}")
-                        logger.info(f"    URL: {marker_url}")
-                        return finding
+                        return None
             else:
                 # Payload not reflected at all, try marker to detect reflection capability
                 marker_payload = '"><s>superman</s>'
@@ -601,24 +571,7 @@ class VulnerabilityScanner:
                 )
                 
                 if marker_response and 'superman' in marker_response:
-                    # Marker reflects even though payload didn't
-                    finding = self._apply_confidence({
-                        'type': 'REFLECTION',
-                        'status': 'REFLECTION',
-                        'url': self.target_url,
-                        'test_url': marker_url,
-                        'parameter': param,
-                        'payload': marker_payload,
-                        'payload_type': 'marker',
-                        'severity': 'Medium',
-                        'status_code': marker_status,
-                        'proof': f"Reflection possible (marker reflects)",
-                        'timestamp': time.time(),
-                    }, base_confidence='low')
-                    
-                    logger.info(f"⚠️  [REFLECTION] Found reflection vulnerability: {param}")
-                    logger.info(f"    URL: {marker_url}")
-                    return finding
+                    return None
         
         except Exception as e:
             logger.debug(f"Error testing XSS on {param}: {e}")
@@ -797,7 +750,7 @@ class VulnerabilityScanner:
         """Set confidence metadata and optionally raise it using Playwright DOM verification."""
         finding['confidence'] = base_confidence
 
-        if not test_url or not probe_type or finding.get('type') == 'REFLECTION':
+        if not test_url or not probe_type:
             return finding
 
         verification = self._verify_playwright_html_injection(test_url, probe_type)
@@ -1990,8 +1943,6 @@ class VulnerabilityScanner:
             print(f"{color}✅ [XSS]{reset} found at {finding.get('test_url', finding.get('url', 'N/A'))}")
         elif status == 'HTML_INJECTION':
             print(f"{color}✅ [HTML-INJECTION]{reset} found at {finding.get('test_url', finding.get('url', 'N/A'))}")
-        elif status == 'REFLECTION':
-            print(f"{color}⚠️  [REFLECTION]{reset} found at {finding.get('test_url', finding.get('url', 'N/A'))}")
         else:
             print(f"{color}[{status.upper()}]{reset} {finding.get('type', 'Unknown')}")
             print(f"  URL: {finding.get('test_url', finding.get('url', 'N/A'))}")
