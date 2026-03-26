@@ -1154,7 +1154,6 @@ class VulnerabilityScanner:
         # Default xss-only behavior: marker-based probing only (safe, low-noise).
         # Use dangerous payload set only when user explicitly requests xss_verbose mode.
         if self.silent:
-            print(f"[DEBUG _scan_xss] Using xss_verbose={self.xss_verbose} mode")
             payloads = CUSTOM_PARAM_PAYLOADS
         else:
             payloads = {
@@ -1622,14 +1621,10 @@ class VulnerabilityScanner:
     def _scan_nuclei(self) -> None:
         """Scan using Nuclei templates for comprehensive vulnerability detection"""
         self.log_info("🔍 [NUCLEI] Starting Nuclei template-based scanning...")
-        if self.silent:
-            print("[DEBUG _scan_nuclei] Starting nuclei scan...")
         
         # Check if nuclei is available
         if not check_tool_exists('nuclei', 'nuclei -version'):
             logger.warning("⚠️  Nuclei not installed. Skipping template-based scanning.")
-            if self.silent:
-                print("[DEBUG _scan_nuclei] Nuclei NOT FOUND - skipping")
             logger.info("   To install: go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest")
             return
         
