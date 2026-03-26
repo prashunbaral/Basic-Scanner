@@ -366,7 +366,7 @@ class VulnerabilityScanner:
         return None
     
     def _test_xss(self, param: str, payload_name: str, payload: str) -> Optional[Dict]:
-        """Test parameter for XSS with multiple marker variations based on context"""
+        """Test parameter for XSS with context-aware payload selection"""
         
         test_key = f"{param}:{payload_name}"
         test_hash = calculate_hash(test_key)
@@ -376,53 +376,99 @@ class VulnerabilityScanner:
         self.tested.add(test_hash)
         
         try:
-            # MARKER-BASED DETECTION MODE (default)
-            # Only use dangerous payloads if --xss-verbose flag is set
+            # CONTEXT-AWARE DETECTION MODE
             if not self.xss_verbose:
-                # Try multiple marker variations to detect different escaping contexts
-                marker_variations = [
-                    ('"><s>superman', 'tag_break'),
-                    ('" superman', 'attribute_quote'),
-                ]
+                # Step 1: Inject harmless marker to detect reflection context
+                harmless_marker = "superman"
+                marker_url = inject_payload(self.target_url, param, harmless_marker, method='query')
                 
-                for marker_payload, marker_type in marker_variations:
-                    marker_url = inject_payload(self.target_url, param, marker_payload, method='query')
+                marker_response, marker_status, marker_error = make_http_request(
+                    marker_url,
+                    timeout=self.timeout,
+                    verify_ssl=False
+                )
+                
+                if marker_error or not marker_response or harmless_marker not in marker_response:
+                    # No reflection detected
+                    return None
+                
+                # Step 2: Analyze context - where and how is the marker reflected?
+                context = self._detect_reflection_context(param, harmless_marker, marker_response)
+                
+                # Step 3: Based on context, test with appropriate escape payloads
+                if context == "html_attribute_double_quote":
+                    # Escaping from HTML attribute with double quotes: " or "><
+                    test_payloads = [
+                        ('" superman', 'attribute_double_quote'),
+                        ('"><s>superman', 'html_tag_break'),
+                    ]
+                elif context == "html_attribute_single_quote":
+                    # Escaping from HTML attribute with single quotes: ' or '><
+                    test_payloads = [
+                        ("' superman", 'attribute_single_quote'),
+                        ("'><s>superman", 'html_tag_break_single'),
+                    ]
+                elif context == "javascript_single_quote":
+                    # Escaping from JavaScript single-quoted string: ';...;'
+                    test_payloads = [
+                        ("';alert(1);//", 'js_single_quote_escape'),
+                        ("')+alert(1)+('", 'js_single_quote_break'),
+                    ]
+                elif context == "javascript_double_quote":
+                    # Escaping from JavaScript double-quoted string: ";...;"
+                    test_payloads = [
+                        ('";alert(1);//', 'js_double_quote_escape'),
+                        ('\")+alert(1)+(\"', 'js_double_quote_break'),
+                    ]
+                elif context == "javascript_unquoted":
+                    # Unquoted JavaScript context
+                    test_payloads = [
+                        (')\nalert(1)\n//', 'js_unquoted_break'),
+                    ]
+                else:
+                    # Unknown or other context - try basic escapes
+                    test_payloads = [
+                        ('"><s>superman', 'tag_break'),
+                        ('" superman', 'attribute_quote'),
+                        ("' superman", 'single_quote'),
+                    ]
+                
+                # Step 4: Test with context-appropriate payloads
+                for test_payload, test_type in test_payloads:
+                    test_url = inject_payload(self.target_url, param, test_payload, method='query')
                     
-                    marker_response, marker_status, marker_error = make_http_request(
-                        marker_url,
+                    test_response, test_status, test_error = make_http_request(
+                        test_url,
                         timeout=self.timeout,
                         verify_ssl=False
                     )
                     
-                    if marker_error:
+                    if test_error or not test_response:
                         continue
                     
-                    if not marker_response:
-                        continue
-                    
-                    # Check if marker is reflected RAW in response
-                    if marker_payload in marker_response:
-                        
-                        if self._is_marker_actually_reflected(marker_payload, marker_response, marker_type):
-                            # Parameter is injectable with this specific marker
+                    # Check if escape payload is reflected
+                    if test_payload in test_response:
+                        # Verify it actually escapes the context
+                        if self._is_marker_actually_reflected(test_payload, test_response, test_type):
                             finding = {
                                 'type': 'INJECTABLE',
                                 'status': '[INJECTABLE]',
                                 'url': self.target_url,
-                                'test_url': marker_url,
+                                'test_url': test_url,
                                 'parameter': param,
-                                'payload': marker_payload,
-                                'payload_type': marker_type,
+                                'payload': test_payload,
+                                'payload_type': test_type,
+                                'context': context,
                                 'severity': 'Medium',
-                                'status_code': marker_status,
-                                'proof': f"Parameter reflects user input ({marker_type})",
+                                'status_code': test_status,
+                                'proof': f"Parameter injectable in {context} context",
                                 'timestamp': time.time(),
                             }
                             
-                            logger.info(f"✅ [INJECTABLE] Found injectable parameter: {param} ({marker_type})")
-                            logger.info(f"    URL: {marker_url}")
+                            logger.info(f"✅ [INJECTABLE] Found in {context}: {param} ({test_type})")
+                            logger.info(f"    URL: {test_url}")
                             return finding
-                    
+                
                 return None
             
             # VERBOSE MODE: Test with dangerous payloads (--xss-verbose)
@@ -566,6 +612,45 @@ class VulnerabilityScanner:
             return True
         
         return False
+    
+    def _detect_reflection_context(self, param: str, marker: str, response: str) -> str:
+        """
+        Detect the context where the marker is reflected in the response.
+        Returns the context type: html_attribute_double_quote, javascript_single_quote, etc.
+        """
+        import re
+        
+        # Look for the marker in various contexts
+        marker_escaped_double = marker.replace('"', '\\"')
+        marker_escaped_single = marker.replace("'", "\\'")
+        
+        # Pattern 1: Inside HTML attribute with double quotes
+        # e.g., <input name="value_here">
+        if re.search(rf'<[^>]*\s\w+="[^"]*{re.escape(marker)}[^"]*"', response):
+            return "html_attribute_double_quote"
+        
+        # Pattern 2: Inside HTML attribute with single quotes
+        # e.g., <input name='value_here'>
+        if re.search(rf"<[^>]*\s\w+='[^']*{re.escape(marker)}[^']*'", response):
+            return "html_attribute_single_quote"
+        
+        # Pattern 3: Inside JavaScript with single quotes
+        # e.g., var x = 'path/superman/...'
+        if re.search(rf"[=:\s]\s*'[^']*{re.escape(marker)}[^']*'", response):
+            return "javascript_single_quote"
+        
+        # Pattern 4: Inside JavaScript with double quotes
+        # e.g., var x = "path/superman/..."
+        if re.search(rf'[=:\s]\s*"[^"]*{re.escape(marker)}[^"]*"', response):
+            return "javascript_double_quote"
+        
+        # Pattern 5: Unquoted JavaScript (JSON object value, URL parameter value, etc)
+        # e.g., {path: /documents/2026/2/12/...?cache-buster=batmann1&path=superman}
+        if re.search(rf':\s*[^"\'{{\[,]*{re.escape(marker)}[^"\'{{\]},]*[,\]}}]', response):
+            return "javascript_unquoted"
+        
+        # Default: just plain HTML
+        return "html_text"
     
     def _is_marker_actually_reflected(self, marker: str, response: str, marker_type: str = 'generic') -> bool:
         """
