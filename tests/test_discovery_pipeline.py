@@ -157,6 +157,27 @@ class DiscoveryPipelineTests(unittest.TestCase):
             self.assertEqual(result['urls'], ['https://example.com/path?q=1'])
             self.assertEqual(result['parameters'], ['q'])
 
+    def test_extract_from_xml_content_collects_sitemap_urls_and_params(self):
+        records, params, js_urls = self.pipeline._extract_from_html_content(
+            'https://example.com/sitemap.xml',
+            '''<?xml version="1.0" encoding="UTF-8"?>
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+              <url><loc>https://example.com/products?id=7</loc></url>
+              <url><loc>https://example.com/search?q=superman</loc></url>
+            </urlset>''',
+            'gau',
+        )
+
+        urls = [record.normalized_url for record in records]
+        param_names = [record['name'] for record in params]
+
+        self.assertIn('https://example.com/sitemap.xml', urls)
+        self.assertIn('https://example.com/products?id=7', urls)
+        self.assertIn('https://example.com/search?q=superman', urls)
+        self.assertIn('id', param_names)
+        self.assertIn('q', param_names)
+        self.assertEqual(js_urls, [])
+
     @patch('scanner.modules.discovery_pipeline.run_command')
     @patch('scanner.modules.discovery_pipeline.check_tool_exists', return_value=True)
     def test_collect_gau_records_ignores_warning_lines_and_keeps_urls(self, _mock_tool_exists, mock_run_command):

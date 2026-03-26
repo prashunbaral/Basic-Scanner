@@ -8,12 +8,13 @@ import json
 import re
 import time
 import concurrent.futures
+import warnings
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urljoin, urlparse, urlunparse
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 
 from scanner.config import DISCOVERY_OUTPUT_DIR
 from scanner.logger import logger
@@ -31,6 +32,7 @@ JS_PARAM_PATTERNS = [
     r'req\.query\.([A-Za-z0-9_-]+)',
     r'new\s+URLSearchParams\([^)]*\)\.get\(["\']([A-Za-z0-9_-]+)["\']\)',
 ]
+XML_URL_TAGS = {'loc', 'link', 'url', 'endpoint', 'href'}
 
 
 @dataclass
@@ -379,7 +381,13 @@ class DiscoveryPipeline:
         self.js_urls.extend(new_js_urls)
 
     def _extract_from_html_content(self, base_url: str, html_content: str, source: str):
-        soup = BeautifulSoup(html_content, 'lxml')
+        if self._looks_like_xml(html_content):
+            self._log(f"🧾 [DISCOVERY] XML document detected at {base_url} - parsing as XML and recording for review")
+            return self._extract_from_xml_content(base_url, html_content, source)
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+            soup = BeautifulSoup(html_content, 'lxml')
         new_records: List[DiscoveryRecord] = []
         new_params: List[Dict] = []
         new_js_urls: List[str] = []
@@ -433,6 +441,58 @@ class DiscoveryPipeline:
                     script_record = self._build_record(urljoin(base_url, url), source=source, discovery_type='inline_script_url')
                     if script_record:
                         new_records.append(script_record)
+
+        return new_records, new_params, new_js_urls
+
+    def _looks_like_xml(self, content: str) -> bool:
+        snippet = (content or '').lstrip()[:512].lower()
+        if not snippet:
+            return False
+        if snippet.startswith('<?xml'):
+            return True
+        if any(tag in snippet for tag in ['<urlset', '<sitemapindex', '<rss', '<feed', '<svg', '<soap:', '<wsdl:']):
+            return True
+        if '<html' in snippet or '<!doctype html' in snippet:
+            return False
+        return bool(re.match(r'^<([a-z0-9_:.-]+)(\s|>)', snippet))
+
+    def _extract_from_xml_content(self, base_url: str, xml_content: str, source: str):
+        soup = BeautifulSoup(xml_content, 'xml')
+        new_records: List[DiscoveryRecord] = []
+        new_params: List[Dict] = []
+        new_js_urls: List[str] = []
+
+        xml_record = self._build_record(
+            base_url,
+            source=source,
+            discovery_type='xml_document',
+            metadata={'content_type': 'xml', 'review_note': 'XML response detected; inspect manually for XML-specific attack surface.'},
+        )
+        if xml_record:
+            new_records.append(xml_record)
+
+        for tag_name in XML_URL_TAGS:
+            for tag in soup.find_all(tag_name):
+                text = (tag.get_text() or '').strip()
+                if not text:
+                    continue
+                for url in URL_PATTERN.findall(text):
+                    record = self._build_record(urljoin(base_url, url), source=source, discovery_type='xml_link')
+                    if record:
+                        new_records.append(record)
+                        for param_name in record.param_names:
+                            new_params.append({
+                                'name': param_name,
+                                'source': source,
+                                'discovery_type': 'xml_query_param',
+                                'url': record.normalized_url,
+                                'metadata': {},
+                            })
+
+        for url in self._extract_urls_from_object(soup.attrs):
+            record = self._build_record(urljoin(base_url, url), source=source, discovery_type='xml_attribute_url')
+            if record:
+                new_records.append(record)
 
         return new_records, new_params, new_js_urls
 
