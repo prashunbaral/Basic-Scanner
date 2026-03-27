@@ -79,6 +79,10 @@ class DiscoveryPipeline:
 
         domain = get_domain_from_url(self.target_url)
 
+        seed_record = self._build_record(self.target_url, source='target', discovery_type='seed_url')
+        if seed_record:
+            self.records.append(seed_record)
+
         self.records.extend(self._collect_playwright_records())
         self.records.extend(self._collect_gau_records(domain))
         self.records.extend(self._collect_wayback_records(domain))

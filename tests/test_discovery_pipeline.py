@@ -178,6 +178,42 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.assertIn('q', param_names)
         self.assertEqual(js_urls, [])
 
+    @patch('scanner.modules.discovery_pipeline.make_http_request')
+    @patch.object(DiscoveryPipeline, '_collect_katana_records', return_value=[])
+    @patch.object(DiscoveryPipeline, '_collect_wayback_records', return_value=[])
+    @patch.object(DiscoveryPipeline, '_collect_gau_records', return_value=[])
+    @patch.object(DiscoveryPipeline, '_collect_playwright_records', return_value=[])
+    def test_run_seeds_target_url_when_tool_discovery_is_empty(
+        self,
+        _mock_playwright,
+        _mock_gau,
+        _mock_wayback,
+        _mock_katana,
+        mock_request,
+    ):
+        mock_request.return_value = (
+            '''
+            <html>
+              <body>
+                <a href="/about">About</a>
+                <form action="/search">
+                  <input name="q">
+                </form>
+              </body>
+            </html>
+            ''',
+            200,
+            None,
+        )
+
+        result = self.pipeline.run()
+
+        self.assertIn('https://example.com/', result['urls'])
+        self.assertIn('https://example.com/about', result['urls'])
+        self.assertIn('https://example.com/search', result['urls'])
+        self.assertIn('q', result['parameters'])
+        self.assertEqual(result['source_counts']['target']['urls'], 3)
+
     @patch('scanner.modules.discovery_pipeline.run_command')
     @patch('scanner.modules.discovery_pipeline.check_tool_exists', return_value=True)
     def test_collect_gau_records_ignores_warning_lines_and_keeps_urls(self, _mock_tool_exists, mock_run_command):
