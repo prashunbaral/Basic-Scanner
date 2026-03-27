@@ -138,6 +138,7 @@ class SilentModeOutputTests(unittest.TestCase):
             with redirect_stdout(buf):
                 main.scan_subdomains_batch(args)
         output = buf.getvalue()
+        self.assertIn('[1/1] Scanning https://example.com...', output)
         self.assertIn('done | findings=0 | printed=0 | discovered_urls=2 | discovered_params=2 | scans=xss', output)
         self.assertIn('sources=gau:u2/p1,katana:u1/p1', output)
         self.assertIn('cache=/tmp/discovery', output)

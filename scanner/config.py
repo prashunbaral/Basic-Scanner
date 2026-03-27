@@ -40,6 +40,8 @@ OPTIONAL_TOOLS = {
 MAX_WORKERS = 10
 MAX_RETRIES = 3
 TIMEOUT = None  # No timeout - let scanner run as long as needed
+LONG_RUNNING_TOOL_TIMEOUT = 31536000  # 1 year for external tools when timeout is unset
+HTTP_REQUEST_TIMEOUT = 60  # 1 minute for normal HTTP requests
 
 # Rate limiting (requests per second)
 RATE_LIMIT = 20

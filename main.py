@@ -149,6 +149,9 @@ def scan_subdomains_batch(args):
         i, subdomain = index_and_subdomain
         url = f'https://{subdomain}' if not subdomain.startswith(('http://', 'https://')) else subdomain
 
+        if not args.silent:
+            print(f"[{i}/{len(subdomains)}] Scanning {url}...", flush=True)
+
         from scanner.scanner_engine import VulnerabilityScanner
 
         scanner = VulnerabilityScanner(
@@ -185,12 +188,16 @@ def scan_subdomains_batch(args):
         print(f"Batch workers: {worker_count}\n")
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
-        for result in executor.map(run_single_subdomain, enumerate(subdomains, 1)):
+        future_to_index = {
+            executor.submit(run_single_subdomain, item): item[0]
+            for item in enumerate(subdomains, 1)
+        }
+        for future in concurrent.futures.as_completed(future_to_index):
+            result = future.result()
             subdomain = result['subdomain']
             findings = result['findings']
 
             if not args.silent:
-                print(f"[{result['index']}/{len(subdomains)}] Scanning {result['url']}...")
                 source_parts = []
                 for source in sorted(result['source_counts'].keys()):
                     counts = result['source_counts'][source]

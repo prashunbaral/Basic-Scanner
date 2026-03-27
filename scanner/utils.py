@@ -8,7 +8,15 @@ import time
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 from typing import List, Set, Dict, Optional, Tuple
 from scanner.logger import logger
-from scanner.config import REQUIRED_TOOLS, EXCLUDE_PATTERNS, MAX_RESPONSE_SIZE, TIMEOUT, MAX_RETRIES
+from scanner.config import (
+    REQUIRED_TOOLS,
+    EXCLUDE_PATTERNS,
+    MAX_RESPONSE_SIZE,
+    TIMEOUT,
+    MAX_RETRIES,
+    LONG_RUNNING_TOOL_TIMEOUT,
+    HTTP_REQUEST_TIMEOUT,
+)
 import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
@@ -38,8 +46,8 @@ def run_command(command: str, timeout: int = TIMEOUT, retry: bool = True) -> Tup
     attempts = 0
     last_error = None
     
-    # None/0 means no timeout. Let the command finish naturally.
-    actual_timeout = None if (timeout is None or timeout == 0) else timeout
+    # None/0 means "effectively unlimited" for external tools.
+    actual_timeout = LONG_RUNNING_TOOL_TIMEOUT if (timeout is None or timeout == 0) else timeout
     
     while attempts < MAX_RETRIES:
         try:
@@ -62,7 +70,7 @@ def run_command(command: str, timeout: int = TIMEOUT, retry: bool = True) -> Tup
                 if retry:
                     time.sleep(2 ** attempts)  # Exponential backoff
         except subprocess.TimeoutExpired:
-            timeout_label = "no timeout" if actual_timeout is None else f"{actual_timeout}s"
+            timeout_label = f"{actual_timeout}s"
             last_error = f"Command timeout ({timeout_label})"
             attempts += 1
         except Exception as e:
@@ -152,32 +160,36 @@ def make_http_request(url: str, method: str = 'GET', data: Dict = None, timeout:
     Returns:
         (response_body, status_code, error_message)
     """
-    try:
-        # Convert 0 or None to None (unlimited timeout for requests library)
-        request_timeout = None if (timeout is None or timeout == 0) else timeout
-        
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-        
-        if method.upper() == 'GET':
-            resp = requests.get(url, headers=headers, timeout=request_timeout, verify=verify_ssl, allow_redirects=True)
-        else:
-            resp = requests.post(url, data=data, headers=headers, timeout=request_timeout, verify=verify_ssl, allow_redirects=True)
-        
-        # Limit response size
-        if len(resp.text) > MAX_RESPONSE_SIZE * 1024 * 1024:
-            logger.warning(f"Response too large: {len(resp.text)} bytes")
-            return resp.text[:MAX_RESPONSE_SIZE * 1024 * 1024], resp.status_code, None
-        
-        return resp.text, resp.status_code, None
-        
-    except requests.Timeout:
-        return None, None, "Request timeout"
-    except requests.ConnectionError as e:
-        return None, None, f"Connection error: {e}"
-    except Exception as e:
-        return None, None, str(e)
+    request_timeout = HTTP_REQUEST_TIMEOUT if (timeout is None or timeout == 0) else timeout
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
+
+    last_error = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            if method.upper() == 'GET':
+                resp = requests.get(url, headers=headers, timeout=request_timeout, verify=verify_ssl, allow_redirects=True)
+            else:
+                resp = requests.post(url, data=data, headers=headers, timeout=request_timeout, verify=verify_ssl, allow_redirects=True)
+
+            if len(resp.text) > MAX_RESPONSE_SIZE * 1024 * 1024:
+                logger.warning(f"Response too large: {len(resp.text)} bytes")
+                return resp.text[:MAX_RESPONSE_SIZE * 1024 * 1024], resp.status_code, None
+
+            return resp.text, resp.status_code, None
+
+        except requests.Timeout:
+            last_error = f"Request timeout after {request_timeout}s (attempt {attempt}/{MAX_RETRIES})"
+        except requests.ConnectionError as e:
+            last_error = f"Connection error (attempt {attempt}/{MAX_RETRIES}): {e}"
+        except Exception as e:
+            return None, None, str(e)
+
+        if attempt < MAX_RETRIES:
+            time.sleep(min(2 ** attempt, 5))
+
+    return None, None, last_error
 
 def detect_reflection(original_url: str, payload: str, response: str) -> bool:
     """
