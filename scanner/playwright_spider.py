@@ -1,5 +1,5 @@
 """
-Playwright-based headless browser automation for parameter discovery via spidering
+Playwright-based browser automation for crawling and targeted DOM verification.
 """
 
 import asyncio
@@ -189,6 +189,60 @@ class PlaywrightSpider:
             self.logger.debug(f"Error parsing URL {url}: {e}")
 
 
+async def verify_playwright_dom(
+    url: str,
+    selectors: List[str],
+    timeout: int = 30,
+    silent: bool = False
+) -> Dict[str, any]:
+    """
+    Load a page and check whether any selector is present in the rendered DOM.
+
+    Returns:
+        {
+            "verified": bool,
+            "matched_selector": str | None,
+            "error": str | None,
+        }
+    """
+    if not PLAYWRIGHT_AVAILABLE:
+        return {"verified": False, "matched_selector": None, "error": "Playwright not installed"}
+
+    try:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context()
+            page = await context.new_page()
+            page.set_default_timeout(timeout * 1000)
+            page.set_default_navigation_timeout(timeout * 1000)
+
+            try:
+                await page.goto(url, wait_until='load')
+            except Exception:
+                await page.goto(url, wait_until='domcontentloaded')
+
+            matched_selector = None
+            for selector in selectors:
+                try:
+                    handle = await page.query_selector(selector)
+                    if handle is not None:
+                        matched_selector = selector
+                        break
+                except Exception:
+                    continue
+
+            await browser.close()
+            return {
+                "verified": matched_selector is not None,
+                "matched_selector": matched_selector,
+                "error": None,
+            }
+    except Exception as e:
+        if not silent:
+            logging.debug(f"Playwright DOM verification error: {e}")
+        return {"verified": False, "matched_selector": None, "error": str(e)}
+
+
 def run_playwright_spider(url: str, timeout: int = 30, max_pages: int = 50, verbose: bool = False, silent: bool = False) -> Dict:
     """
     Synchronous wrapper for Playwright spider
@@ -215,3 +269,13 @@ def run_playwright_spider(url: str, timeout: int = 30, max_pages: int = 50, verb
         else:
             logging.debug(f"Playwright spider error (silent mode): {e}")
         return {"urls": [], "parameters": []}
+
+
+def run_playwright_dom_verification(url: str, selectors: List[str], timeout: int = 30, silent: bool = False) -> Dict:
+    """Synchronous wrapper for DOM verification."""
+    try:
+        return asyncio.run(verify_playwright_dom(url, selectors, timeout=timeout, silent=silent))
+    except Exception as e:
+        if not silent:
+            logging.debug(f"Playwright DOM verification wrapper error: {e}")
+        return {"verified": False, "matched_selector": None, "error": str(e)}

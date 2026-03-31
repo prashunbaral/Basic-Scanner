@@ -7,6 +7,9 @@ import time
 import logging
 from typing import List, Dict, Optional
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+import re
+
+from bs4 import BeautifulSoup
 
 from scanner.logger import logger
 from scanner.utils import (
@@ -19,16 +22,21 @@ from scanner.config import (
     CUSTOM_PARAM_NAMES
 )
 from scanner.scanners.xxe import XXEScanner
-from scanner.playwright_spider import run_playwright_spider
+from scanner.playwright_spider import run_playwright_spider, run_playwright_dom_verification
+from scanner.modules.discovery_pipeline import DiscoveryPipeline
 import concurrent.futures
 
 
 class VulnerabilityScanner:
     """Main vulnerability scanner engine"""
+    MARKER = "superman"
+    HTML_MARKUP_PAYLOAD = '<s data-superman="superman">superman</s>'
     
     def __init__(self, target_url: str, threads: int = 10, timeout: int = 0,
                  deep: bool = False, aggressive: bool = False, bypass_waf: bool = False,
-                 verbose: bool = False, silent: bool = False, live_output: bool = False, xss_verbose: bool = False):
+                 verbose: bool = False, silent: bool = False, live_output: bool = False,
+                 xss_verbose: bool = False, update_nuclei_templates: bool = False,
+                 update_nuclei: bool = False, discovery_cache: Optional[str] = None):
         self.target_url = normalize_url(target_url)
         self.threads = min(threads, MAX_WORKERS)
         # timeout=0 means unlimited
@@ -40,10 +48,20 @@ class VulnerabilityScanner:
         self.silent = silent
         self.live_output = live_output
         self.xss_verbose = xss_verbose
+        self.update_nuclei_templates = update_nuclei_templates
+        self.update_nuclei = update_nuclei
+        self.discovery_cache = discovery_cache
         self.findings = []
         self.tested = set()
         self.discovered_urls = []  # Store URLs discovered during parameter discovery
+        self.discovered_url_records = []
+        self.discovered_param_records = []
+        self.discovery_output_dir = None
+        self.discovery_source_counts = {}
         self.scan_types = []  # Store scan types for nuclei tag filtering
+        self.baseline_cache = {}
+        self.nuclei_help_cache = None
+        self.playwright_verification_available = True
 
         # In silent mode, suppress warning/info logs from scanner internals.
         if self.silent:
@@ -103,26 +121,18 @@ class VulnerabilityScanner:
         if not parameters and not param:
             if not self.silent:
                 logger.warning("⚠️  No parameters found in URL, discovering from domain...")
-            else:
-                print("[DEBUG] No parameters in URL, starting discovery from domain...")
             discovered = self._discover_parameters_with_tools()
             if discovered:
                 # Merge discovered parameters with common parameters
                 parameters = list(set(discovered + common_params))
                 self.log_info(f"✓ Discovered {len(discovered)} parameters from domain, testing {len(parameters)} total with common defaults")
-                if self.silent:
-                    print(f"[DEBUG] Discovered {len(discovered)} parameters, total to test: {len(parameters)}")
                 
                 # Test discovered URLs directly (if any were found during parameter discovery)
                 if hasattr(self, 'discovered_urls') and self.discovered_urls and 'xss' in scan_types:
                     logger.info(f"🔗 Also testing {len(self.discovered_urls)} discovered URLs for XSS injection...")
-                    if self.silent:
-                        print(f"[DEBUG] Will test {len(self.discovered_urls)} discovered URLs for XSS")
             else:
                 if not self.silent:
                     logger.warning("⚠️  No parameters discovered, using common defaults")
-                else:
-                    print(f"[DEBUG] No parameters discovered. Using {len(common_params)} common default parameters")
                 parameters = common_params
         elif parameters:
             # Merge discovered parameters in URL with common parameters
@@ -131,13 +141,9 @@ class VulnerabilityScanner:
             parameters = [param]
         
         logger.info(f"Testing {len(parameters)} parameter(s)")
-        if self.silent:
-            print(f"[DEBUG] Starting XSS scan with {len(parameters)} parameters")
         
         # Run custom payload-based scans
         if 'xss' in scan_types:
-            if self.silent:
-                print(f"[DEBUG] Calling _scan_xss with parameters: {parameters[:5]}...")
             self._scan_xss(parameters)
             
             # Test discovered URLs for XSS
@@ -182,9 +188,7 @@ class VulnerabilityScanner:
                     self._test_discovered_urls_xss(self.discovered_urls)
         
         # Run Nuclei scanning when explicitly selected OR when XSS is being scanned
-        if 'nuclei' in scan_types or 'xss' in scan_types:
-            if self.silent:
-                print(f"[DEBUG] Starting Nuclei scan (deep={self.deep})")
+        if 'nuclei' in scan_types:
             try:
                 if self.deep:
                     self._scan_nuclei_advanced()
@@ -192,11 +196,19 @@ class VulnerabilityScanner:
                     self._scan_nuclei()
             except Exception as e:
                 logger.debug(f"Nuclei scanning skipped: {e}")
-                if self.silent:
-                    print(f"[DEBUG] Nuclei error: {e}")
+
+        if 'nuclei-full' in scan_types:
+            try:
+                self._scan_nuclei_full()
+            except Exception as e:
+                logger.debug(f"Extensive nuclei scanning skipped: {e}")
+
+        if 'nuclei-cves' in scan_types:
+            try:
+                self._scan_nuclei_cves()
+            except Exception as e:
+                logger.debug(f"CVE-focused nuclei scanning skipped: {e}")
         
-        if self.silent:
-            print(f"[DEBUG] Scan complete. Total findings: {len(self.findings)}")
         return self.findings
     
     def _extract_parameters(self) -> List[str]:
@@ -292,15 +304,13 @@ class VulnerabilityScanner:
     
     def _test_discovered_urls_xss(self, urls: List[str]):
         """Test discovered URLs for XSS by injecting markers into their parameters"""
-        # Deduplicate while preserving order before exhaustive testing.
-        unique_urls = list(dict.fromkeys(urls))
-        logger.info(f"🔗 Testing {len(unique_urls)} discovered URLs for parameter injection...")
+        logger.info(f"🔗 Testing {len(urls)} discovered URLs for parameter injection...")
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = []
             
             # Exhaustive mode: test every discovered URL.
-            for url in unique_urls:
+            for url in urls:
                 try:
                     # Extract parameters from this URL
                     parsed = urlparse(url)
@@ -311,8 +321,8 @@ class VulnerabilityScanner:
                         for param_name in params.keys():
                             # Try marker variations on this specific URL
                             marker_variations = [
-                                ('"><s>superman', 'tag_break'),
-                                ('" superman', 'attribute_quote'),
+                                ('">' + self.HTML_MARKUP_PAYLOAD, 'tag_break'),
+                                ('" data-superman="superman"', 'attribute_quote'),
                             ]
                             
                             for marker_payload, marker_type in marker_variations:
@@ -350,6 +360,7 @@ class VulnerabilityScanner:
         self.tested.add(test_hash)
         
         try:
+            baseline_response = self._get_baseline_response(url)
             # Inject marker into this URL's parameter
             test_url = inject_payload(url, param, marker, method='query')
             response, status, error = make_http_request(
@@ -358,11 +369,11 @@ class VulnerabilityScanner:
                 verify_ssl=False
             )
             
-            if response and self._is_marker_actually_reflected(marker, response, marker_type):
+            if response and self._verify_html_injection(baseline_response, response, marker_type):
                 # Found injectable parameter in discovered URL
-                finding = {
-                    'type': 'INJECTABLE',
-                    'status': '[INJECTABLE]',
+                finding = self._apply_confidence({
+                    'type': 'HTML Injection',
+                    'status': 'HTML_INJECTION',
                     'url': url,
                     'test_url': test_url,
                     'parameter': param,
@@ -370,11 +381,11 @@ class VulnerabilityScanner:
                     'payload_type': marker_type,
                     'severity': 'Medium',
                     'status_code': status,
-                    'proof': f"Parameter reflects user input ({marker_type})",
+                    'proof': f"DOM structure changed in parsed HTML ({marker_type})",
                     'timestamp': time.time(),
-                }
+                }, base_confidence='medium', test_url=test_url, probe_type=marker_type, proof_prefix=f"DOM structure changed in parsed HTML ({marker_type})")
                 
-                logger.info(f"✅ [INJECTABLE] Found in discovered URL: {param} ({marker_type})")
+                logger.info(f"✅ [HTML-INJECTION] Found in discovered URL: {param} ({marker_type})")
                 logger.info(f"    URL: {url}")
                 return finding
         
@@ -384,7 +395,7 @@ class VulnerabilityScanner:
         return None
     
     def _test_xss(self, param: str, payload_name: str, payload: str) -> Optional[Dict]:
-        """Test parameter for XSS with multiple marker variations based on context"""
+        """Test parameter for XSS with context-aware payload selection"""
         
         test_key = f"{param}:{payload_name}"
         test_hash = calculate_hash(test_key)
@@ -393,66 +404,114 @@ class VulnerabilityScanner:
             return None
         self.tested.add(test_hash)
         
-        if self.silent and payload_name == 'marker':
-            print(f"[DEBUG _test_xss] Testing param={param} with marker")
-        
         try:
-            # MARKER-BASED DETECTION MODE (default)
-            # Only use dangerous payloads if --xss-verbose flag is set
+            # CONTEXT-AWARE DETECTION MODE
             if not self.xss_verbose:
-                # Try multiple marker variations to detect different escaping contexts
-                marker_variations = [
-                    ('"><s>superman', 'tag_break'),
-                    ('" superman', 'attribute_quote'),
-                ]
+                baseline_response = self._get_baseline_response(self.target_url)
+                # Step 1: Inject harmless marker to detect reflection context
+                harmless_marker = self.MARKER
+                marker_url = inject_payload(self.target_url, param, harmless_marker, method='query')
                 
-                for marker_payload, marker_type in marker_variations:
-                    marker_url = inject_payload(self.target_url, param, marker_payload, method='query')
-                    self.log_info(f"📍 Testing {param} with {marker_type} marker: {marker_url[:100]}...")
+                marker_response, marker_status, marker_error = make_http_request(
+                    marker_url,
+                    timeout=self.timeout,
+                    verify_ssl=False
+                )
+                
+                if marker_error or not marker_response or harmless_marker not in marker_response:
+                    # No reflection detected
+                    return None
+                
+                # Step 2: Analyze context - where and how is the marker reflected?
+                context = self._detect_reflection_context(param, harmless_marker, marker_response)
+                
+                # Step 3: Based on context, test with appropriate escape payloads
+                if context == "html_attribute_double_quote":
+                    test_payloads = [
+                        ('" data-superman="superman" superman="superman', 'attribute_double_quote'),
+                        ('">' + self.HTML_MARKUP_PAYLOAD, 'html_tag_break'),
+                    ]
+                elif context == "html_attribute_single_quote":
+                    test_payloads = [
+                        ("' data-superman='superman' superman='superman", 'attribute_single_quote'),
+                        ("'>" + self.HTML_MARKUP_PAYLOAD, 'html_tag_break_single'),
+                    ]
+                elif context == "html_attribute_unquoted":
+                    test_payloads = [
+                        (' superman="superman" data-superman="superman"', 'attribute_unquoted'),
+                    ]
+                elif context == "html_text":
+                    test_payloads = [
+                        (self.HTML_MARKUP_PAYLOAD, 'html_markup'),
+                    ]
+                elif context == "html_comment":
+                    test_payloads = [
+                        ('-->' + self.HTML_MARKUP_PAYLOAD + '<!--', 'comment_break'),
+                    ]
+                elif context == "html_textarea":
+                    test_payloads = [
+                        ('</textarea>' + self.HTML_MARKUP_PAYLOAD, 'textarea_break'),
+                    ]
+                elif context == "html_title":
+                    test_payloads = [
+                        ('</title>' + self.HTML_MARKUP_PAYLOAD, 'title_break'),
+                    ]
+                elif context == "html_template":
+                    test_payloads = [
+                        ('</template>' + self.HTML_MARKUP_PAYLOAD, 'template_break'),
+                    ]
+                elif context == "javascript_single_quote":
+                    test_payloads = [
+                        ("';</script>" + self.HTML_MARKUP_PAYLOAD, 'js_single_quote_break'),
+                    ]
+                elif context == "javascript_double_quote":
+                    test_payloads = [
+                        ('";</script>' + self.HTML_MARKUP_PAYLOAD, 'js_double_quote_break'),
+                    ]
+                elif context == "javascript_unquoted":
+                    test_payloads = [
+                        (';</script>' + self.HTML_MARKUP_PAYLOAD, 'js_unquoted_break'),
+                    ]
+                else:
+                    test_payloads = [
+                        (self.HTML_MARKUP_PAYLOAD, 'html_markup'),
+                        ('">' + self.HTML_MARKUP_PAYLOAD, 'tag_break'),
+                        ('" data-superman="superman"', 'attribute_quote'),
+                        ("' data-superman='superman'", 'single_quote'),
+                    ]
+                
+                # Step 4: Test with context-appropriate payloads
+                for test_payload, test_type in test_payloads:
+                    test_url = inject_payload(self.target_url, param, test_payload, method='query')
                     
-                    marker_response, marker_status, marker_error = make_http_request(
-                        marker_url,
+                    test_response, test_status, test_error = make_http_request(
+                        test_url,
                         timeout=self.timeout,
                         verify_ssl=False
                     )
                     
-                    if marker_error:
-                        self.log_info(f"  ⚠️  Error: {marker_error}")
+                    if test_error or not test_response:
                         continue
                     
-                    if not marker_response:
-                        self.log_info(f"  ⚠️  No response")
-                        continue
-                    
-                    self.log_info(f"  ✓ Got response ({marker_status}, {len(marker_response)} bytes)")
-                    
-                    # Check if marker is reflected RAW in response
-                    if marker_payload in marker_response:
-                        self.log_info(f"  ✅ RAW marker found in response!")
+                    if self._verify_html_injection(baseline_response, test_response, test_type):
+                        finding = self._apply_confidence({
+                            'type': 'HTML Injection',
+                            'status': 'HTML_INJECTION',
+                            'url': self.target_url,
+                            'test_url': test_url,
+                            'parameter': param,
+                            'payload': test_payload,
+                            'payload_type': test_type,
+                            'context': context,
+                            'severity': 'Medium',
+                            'status_code': test_status,
+                            'proof': f"Parsed HTML changed in {context} context",
+                            'timestamp': time.time(),
+                        }, base_confidence='medium', test_url=test_url, probe_type=test_type, proof_prefix=f"Parsed HTML changed in {context} context")
                         
-                        if self._is_marker_actually_reflected(marker_payload, marker_response, marker_type):
-                            # Parameter is injectable with this specific marker
-                            finding = {
-                                'type': 'INJECTABLE',
-                                'status': '[INJECTABLE]',
-                                'url': self.target_url,
-                                'test_url': marker_url,
-                                'parameter': param,
-                                'payload': marker_payload,
-                                'payload_type': marker_type,
-                                'severity': 'Medium',
-                                'status_code': marker_status,
-                                'proof': f"Parameter reflects user input ({marker_type})",
-                                'timestamp': time.time(),
-                            }
-                            
-                            logger.info(f"✅ [INJECTABLE] Found injectable parameter: {param} ({marker_type})")
-                            logger.info(f"    URL: {marker_url}")
-                            return finding
-                        else:
-                            self.log_info(f"  ❌ Context validation FAILED")
-                    else:
-                        self.log_info(f"  ❌ Marker NOT found in response")
+                        logger.info(f"✅ [HTML-INJECTION] Found in {context}: {param} ({test_type})")
+                        logger.info(f"    URL: {test_url}")
+                        return finding
                 
                 return None
             
@@ -472,7 +531,7 @@ class VulnerabilityScanner:
             if self._detect_xss_reflection(payload, response):
                 if self._verify_xss_execution(response, payload):
                     # Confirmed XSS - payload reflects and execution indicators present
-                    finding = {
+                    finding = self._apply_confidence({
                         'type': 'XSS',
                         'status': 'XSS',
                         'url': self.target_url,
@@ -484,7 +543,7 @@ class VulnerabilityScanner:
                         'status_code': status,
                         'proof': f"Dangerous payload reflected with execution indicators",
                         'timestamp': time.time(),
-                    }
+                    }, base_confidence='high')
                     
                     logger.info(f"✅ [XSS] Found XSS vulnerability: {param}")
                     logger.info(f"    URL: {test_url}")
@@ -501,24 +560,7 @@ class VulnerabilityScanner:
                     )
                     
                     if marker_response and 'superman' in marker_response:
-                        # Marker reflects - this is a reflection vulnerability, not XSS
-                        finding = {
-                            'type': 'REFLECTION',
-                            'status': 'REFLECTION',
-                            'url': self.target_url,
-                            'test_url': marker_url,
-                            'parameter': param,
-                            'payload': marker_payload,
-                            'payload_type': 'marker',
-                            'severity': 'Medium',
-                            'status_code': marker_status,
-                            'proof': f"Marker reflected (XSS payload blocked)",
-                            'timestamp': time.time(),
-                        }
-                        
-                        logger.info(f"⚠️  [REFLECTION] Found reflection vulnerability: {param}")
-                        logger.info(f"    URL: {marker_url}")
-                        return finding
+                        return None
             else:
                 # Payload not reflected at all, try marker to detect reflection capability
                 marker_payload = '"><s>superman</s>'
@@ -530,24 +572,7 @@ class VulnerabilityScanner:
                 )
                 
                 if marker_response and 'superman' in marker_response:
-                    # Marker reflects even though payload didn't
-                    finding = {
-                        'type': 'REFLECTION',
-                        'status': 'REFLECTION',
-                        'url': self.target_url,
-                        'test_url': marker_url,
-                        'parameter': param,
-                        'payload': marker_payload,
-                        'payload_type': 'marker',
-                        'severity': 'Medium',
-                        'status_code': marker_status,
-                        'proof': f"Reflection possible (marker reflects)",
-                        'timestamp': time.time(),
-                    }
-                    
-                    logger.info(f"⚠️  [REFLECTION] Found reflection vulnerability: {param}")
-                    logger.info(f"    URL: {marker_url}")
-                    return finding
+                    return None
         
         except Exception as e:
             logger.debug(f"Error testing XSS on {param}: {e}")
@@ -598,6 +623,150 @@ class VulnerabilityScanner:
         
         return False
     
+    def _detect_reflection_context(self, param: str, marker: str, response: str) -> str:
+        """
+        Detect the context where the marker is reflected in the response.
+        Returns the context type: html_attribute_double_quote, javascript_single_quote, etc.
+        """
+        if re.search(rf'<!--[\s\S]*?{re.escape(marker)}[\s\S]*?-->', response, re.IGNORECASE):
+            return "html_comment"
+
+        if re.search(rf'<textarea[^>]*>[\s\S]*?{re.escape(marker)}[\s\S]*?</textarea>', response, re.IGNORECASE):
+            return "html_textarea"
+
+        if re.search(rf'<title[^>]*>[\s\S]*?{re.escape(marker)}[\s\S]*?</title>', response, re.IGNORECASE):
+            return "html_title"
+
+        if re.search(rf'<template[^>]*>[\s\S]*?{re.escape(marker)}[\s\S]*?</template>', response, re.IGNORECASE):
+            return "html_template"
+
+        if re.search(rf'<[^>]*\s[\w:-]+\s*=\s*"[^"]*{re.escape(marker)}[^"]*"', response):
+            return "html_attribute_double_quote"
+
+        if re.search(rf"<[^>]*\s[\w:-]+\s*=\s*'[^']*{re.escape(marker)}[^']*'", response):
+            return "html_attribute_single_quote"
+
+        if re.search(rf'<[^>]*\s[\w:-]+\s*=\s*[^\'"\s>]*{re.escape(marker)}[^\'"\s>]*', response):
+            return "html_attribute_unquoted"
+
+        if re.search(rf"<script\b[^>]*>[\s\S]*?'[^'\n]*{re.escape(marker)}[^'\n]*'[\s\S]*?</script>", response, re.IGNORECASE):
+            return "javascript_single_quote"
+
+        if re.search(rf'<script\b[^>]*>[\s\S]*?"[^"\n]*{re.escape(marker)}[^"\n]*"[\s\S]*?</script>', response, re.IGNORECASE):
+            return "javascript_double_quote"
+
+        if re.search(rf'<script\b[^>]*>[\s\S]*[:=]\s*[^"\'\{{\[\n;]*{re.escape(marker)}[^"\'\}}\]\n;]*[\s;,\)\]\}}]', response, re.IGNORECASE):
+            return "javascript_unquoted"
+
+        return "html_text"
+
+    def _get_baseline_response(self, url: str) -> str:
+        """Fetch and cache the baseline response for a URL."""
+        if url not in self.baseline_cache:
+            response, _, _ = make_http_request(
+                url,
+                timeout=self.timeout,
+                verify_ssl=False
+            )
+            self.baseline_cache[url] = response or ""
+        return self.baseline_cache[url]
+
+    def _count_html_injection_artifacts(self, response: str, probe_type: str) -> int:
+        """Count structural artifacts that indicate our HTML probe changed the parsed DOM."""
+        if not response:
+            return 0
+
+        soup = BeautifulSoup(response, 'lxml')
+        count = 0
+
+        for tag in soup.find_all(True):
+            attrs = tag.attrs or {}
+            data_superman = attrs.get('data-superman')
+            superman_attr = attrs.get('superman')
+
+            if probe_type in {
+                'html_markup', 'tag_break', 'html_tag_break', 'html_tag_break_single',
+                'comment_break', 'textarea_break', 'title_break',
+                'template_break', 'js_single_quote_break',
+                'js_double_quote_break', 'js_unquoted_break'
+            }:
+                if tag.name == 's' and data_superman == self.MARKER and tag.get_text(strip=True) == self.MARKER:
+                    count += 1
+
+            if probe_type in {'attribute_double_quote', 'attribute_single_quote', 'attribute_unquoted', 'attribute_quote', 'single_quote'}:
+                if data_superman == self.MARKER or superman_attr == self.MARKER:
+                    count += 1
+
+        return count
+
+    def _verify_html_injection(self, baseline_response: str, test_response: str, probe_type: str) -> bool:
+        """Verify HTML injection by confirming a new parser-visible artifact exists after injection."""
+        baseline_count = self._count_html_injection_artifacts(baseline_response, probe_type)
+        test_count = self._count_html_injection_artifacts(test_response, probe_type)
+        return test_count > baseline_count
+
+    def _playwright_selectors_for_probe(self, probe_type: str) -> List[str]:
+        """Return DOM selectors that prove the injection survived browser parsing."""
+        attribute_probes = {
+            'attribute_double_quote', 'attribute_single_quote',
+            'attribute_unquoted', 'attribute_quote', 'single_quote'
+        }
+        markup_probes = {
+            'html_markup', 'tag_break', 'html_tag_break', 'html_tag_break_single',
+            'comment_break', 'textarea_break', 'title_break',
+            'template_break', 'js_single_quote_break', 'js_double_quote_break',
+            'js_unquoted_break'
+        }
+
+        if probe_type in attribute_probes:
+            return ['[data-superman="superman"]', '[superman="superman"]']
+        if probe_type in markup_probes:
+            return ['s[data-superman="superman"]', '[data-superman="superman"]']
+        return ['[data-superman="superman"]', 's[data-superman="superman"]', '[superman="superman"]']
+
+    def _verify_playwright_html_injection(self, test_url: str, probe_type: str) -> Dict:
+        """Use Playwright to confirm the injected artifact appears in the rendered DOM."""
+        if not self.playwright_verification_available:
+            return {'verified': False, 'matched_selector': None, 'error': 'Playwright verification disabled'}
+
+        selectors = self._playwright_selectors_for_probe(probe_type)
+        result = run_playwright_dom_verification(
+            test_url,
+            selectors=selectors,
+            timeout=self.timeout,
+            silent=self.silent,
+        )
+        if result.get('error'):
+            self.playwright_verification_available = False
+        return result
+
+    def _apply_confidence(
+        self,
+        finding: Dict,
+        base_confidence: str,
+        test_url: Optional[str] = None,
+        probe_type: Optional[str] = None,
+        proof_prefix: Optional[str] = None
+    ) -> Dict:
+        """Set confidence metadata and optionally raise it using Playwright DOM verification."""
+        finding['confidence'] = base_confidence
+
+        if not test_url or not probe_type:
+            return finding
+
+        verification = self._verify_playwright_html_injection(test_url, probe_type)
+        if verification.get('verified'):
+            finding['browser_verified'] = True
+            finding['browser_selector'] = verification.get('matched_selector')
+            finding['confidence'] = 'high'
+            if proof_prefix:
+                finding['proof'] = f"{proof_prefix}; Playwright verified {verification.get('matched_selector')}"
+        elif verification.get('error'):
+            finding['browser_verified'] = False
+            finding['browser_verification_error'] = verification.get('error')
+
+        return finding
+    
     def _is_marker_actually_reflected(self, marker: str, response: str, marker_type: str = 'generic') -> bool:
         """
         Marker reflection check - MUST be raw (unencoded) in HTML source to be exploitable.
@@ -617,9 +786,8 @@ class VulnerabilityScanner:
             logger.debug(f"Marker is escaped (backslash before it) - rejecting")
             return False
         
-        # For raw marker reflection, accept it
-        # The marker being in raw form in the response is inherently exploitable for XSS
-        logger.debug(f"✓ Raw marker reflected and not escaped - EXPLOITABLE")
+        # Raw reflection alone is not enough to prove HTML injection.
+        logger.debug(f"✓ Raw marker reflected")
         return True
     
     def _verify_xss_execution(self, response: str, payload: str) -> bool:
@@ -953,7 +1121,7 @@ class VulnerabilityScanner:
             test_url = inject_payload(self.target_url, param, payload, method='query')
             
             start_time = time.time()
-            response, status, _ = make_http_request(test_url, timeout=10, verify_ssl=False)
+            response, status, _ = make_http_request(test_url, timeout=self.timeout, verify_ssl=False)
             elapsed = time.time() - start_time
             
             # If response took at least 4 seconds, likely time-based SQLi
@@ -1184,13 +1352,12 @@ class VulnerabilityScanner:
 
         # Default xss-only behavior: marker-based probing only (safe, low-noise).
         # Use dangerous payload set only when user explicitly requests xss_verbose mode.
-        if self.silent:
-            print(f"[DEBUG _scan_xss] Using xss_verbose={self.xss_verbose} mode")
+        if self.xss_verbose:
             payloads = CUSTOM_PARAM_PAYLOADS
         else:
             payloads = {
-                'tag_break': '"><s>superman',
-                'attribute_quote': '" superman',
+                'tag_break': '">' + self.HTML_MARKUP_PAYLOAD,
+                'attribute_quote': '" data-superman="superman"',
             }
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.threads) as executor:
@@ -1238,28 +1405,30 @@ class VulnerabilityScanner:
             
             # In default mode, treat this as injectability detection (marker breakout),
             # not full XSS execution detection.
+            baseline_response = self._get_baseline_response(self.target_url)
+
             if not self.xss_verbose:
-                if self._is_marker_actually_reflected(payload, response, payload_name):
-                    finding = {
-                        'type': 'INJECTABLE',
-                        'status': '[INJECTABLE]',
+                if self._verify_html_injection(baseline_response, response, payload_name):
+                    finding = self._apply_confidence({
+                        'type': 'HTML Injection',
+                        'status': 'HTML_INJECTION',
                         'url': self.target_url,
                         'test_url': test_url,
                         'parameter': param_name,
                         'payload': payload,
                         'payload_type': payload_name,
                         'severity': 'Medium',
-                        'proof': f'Marker reflected in exploitable HTML context for custom parameter: {param_name}',
+                        'proof': f'Parsed HTML changed for custom parameter: {param_name}',
                         'timestamp': time.time(),
-                    }
+                    }, base_confidence='medium', test_url=test_url, probe_type=payload_name, proof_prefix=f'Parsed HTML changed for custom parameter: {param_name}')
 
-                    logger.info(f"✅ [CUSTOM-PARAM][INJECTABLE] Found injectable custom parameter: {param_name} ({payload_name})")
+                    logger.info(f"✅ [CUSTOM-PARAM][HTML-INJECTION] Found injectable custom parameter: {param_name} ({payload_name})")
                     return finding
             else:
                 # Verbose mode keeps dangerous payload execution checks.
                 if self._detect_xss_reflection(payload, response):
                     if self._verify_xss_execution(response, payload):
-                        finding = {
+                        finding = self._apply_confidence({
                             'type': 'XSS (Custom Parameter)',
                             'url': self.target_url,
                             'test_url': test_url,
@@ -1269,7 +1438,7 @@ class VulnerabilityScanner:
                             'severity': 'High',
                             'proof': f'Payload reflected when injected as new parameter: {param_name}',
                             'timestamp': time.time(),
-                        }
+                        }, base_confidence='high')
 
                         logger.info(f"✅ [CUSTOM-PARAM] Found vulnerability in parameter: {param_name}")
                         return finding
@@ -1349,302 +1518,44 @@ class VulnerabilityScanner:
         
         logger.info("✅ sqlmap scan complete")
     def _discover_parameters_with_tools(self):
-        """Use various tools to discover parameters and URLs"""
-        logger.info("🔍 [PARAM-DISCOVERY] Starting parameter discovery...")
-        if self.silent:
-            print("[DEBUG] Starting parameter discovery...")
-        
-        discovered_params = set()
-        discovered_urls = []
-        
-        # Try Playwright spider first for live parameter discovery from navigation
-        if not self.silent:
-            logger.info("🌐 Attempting Playwright headless browser crawling...")
-        if self.silent:
-            print("[DEBUG] Attempting Playwright headless browser crawling...")
+        """Use the discovery pipeline to collect URLs and parameters with metadata."""
+        self.log_info("🔍 [PARAM-DISCOVERY] Starting discovery pipeline...")
+
+        pipeline = DiscoveryPipeline(
+            target_url=self.target_url,
+            timeout=self.timeout,
+            verbose=self.verbose,
+            silent=self.silent,
+            discovery_cache=self.discovery_cache,
+            workers=self.threads,
+        )
+
         try:
-            spider_result = run_playwright_spider(
-                self.target_url, 
-                timeout=self.timeout,
-                max_pages=20,
-                verbose=self.verbose,
-                silent=self.silent
-            )
-            
-            if spider_result and spider_result.get("parameters"):
-                discovered_params.update(spider_result["parameters"])
-                if spider_result.get("urls"):
-                    discovered_urls.extend(spider_result["urls"])
-                logger.info(f"✅ Playwright discovered {len(spider_result['parameters'])} parameters")
-                if self.verbose:
-                    logger.info(f"   Parameters: {', '.join(list(spider_result['parameters'])[:15])}")
-        
+            result = pipeline.run()
         except Exception as e:
-            logger.debug(f"Playwright spider error (this is optional): {e}")
-        
-        # Try gau piped to katana - discovers URLs AND parameters
-        gau_exists = check_tool_exists('gau', 'gau --version')
-        katana_exists = check_tool_exists('katana', 'katana -h')
-        if self.silent:
-            print(f"[DEBUG] gau exists: {gau_exists}, katana exists: {katana_exists}")
-        
-        if gau_exists and katana_exists:
-            self.log_info("🔍 [GAU+KATANA] Running URL enumeration with gau piped to katana...")
-            try:
-                domain = get_domain_from_url(self.target_url)
-                cmd = f"echo '{domain}' | gau | katana 2>&1"
-                success, result, error = run_command(cmd)
-                
-                if success and result:
-                    katana_urls = []
-                    katana_params_before = len(discovered_params)
-                    
-                    for line in result.split('\n'):
-                        line = line.strip()
-                        # Parse katana's [INF] output format: [INF] Started standard crawling for => <URL>
-                        if '[INF] Started standard crawling for =>' in line:
-                            url = line.split('[INF] Started standard crawling for => ')[-1].strip()
-                            if url and url.startswith('http'):
-                                katana_urls.append(url)
-                                discovered_urls.append(url)
-                                try:
-                                    parsed = urlparse(url)
-                                    params = parse_qs(parsed.query, keep_blank_values=True)
-                                    discovered_params.update(params.keys())
-                                except:
-                                    pass
-                        # Also check for raw URLs in case output format changes
-                        elif line and line.startswith('http') and '[INF]' not in line:
-                            katana_urls.append(line)
-                            discovered_urls.append(line)
-                            try:
-                                parsed = urlparse(line)
-                                params = parse_qs(parsed.query, keep_blank_values=True)
-                                discovered_params.update(params.keys())
-                            except:
-                                pass
-                    
-                    katana_params_new = len(discovered_params) - katana_params_before
-                    logger.info(f"   ✅ Gau→Katana found {len(katana_urls)} URLs with {katana_params_new} new parameters")
-                    if self.verbose and katana_urls:
-                        logger.info(f"   Sample URLs: {', '.join(katana_urls[:3])}")
-                else:
-                    logger.info(f"   ⚠️  Gau→Katana found no URLs")
-            
-            except Exception as e:
-                logger.debug(f"gau→katana error: {e}")
-        
-        # Try waybackurls piped to katana - discovers historical URLs with parameters
-        wayback_exists = check_tool_exists('waybackurls', 'waybackurls -h')
-        if self.silent:
-            print(f"[DEBUG] waybackurls exists: {wayback_exists}, katana exists: {katana_exists}")
-        
-        if wayback_exists and katana_exists:
-            self.log_info("🔍 [WAYBACKURLS+KATANA] Running URL enumeration with waybackurls piped to katana...")
-            try:
-                domain = get_domain_from_url(self.target_url)
-                cmd = f"echo '{domain}' | waybackurls | katana 2>&1"
-                success, result, error = run_command(cmd)
-                
-                if success and result:
-                    wayback_urls = []
-                    wayback_params_before = len(discovered_params)
-                    
-                    for line in result.split('\n'):
-                        line = line.strip()
-                        # Parse katana's [INF] output format
-                        if '[INF] Started standard crawling for =>' in line:
-                            url = line.split('[INF] Started standard crawling for => ')[-1].strip()
-                            if url and url.startswith('http'):
-                                wayback_urls.append(url)
-                                discovered_urls.append(url)
-                                try:
-                                    parsed = urlparse(url)
-                                    params = parse_qs(parsed.query, keep_blank_values=True)
-                                    discovered_params.update(params.keys())
-                                except:
-                                    pass
-                        # Also check for raw URLs
-                        elif line and line.startswith('http') and '[INF]' not in line:
-                            wayback_urls.append(line)
-                            discovered_urls.append(line)
-                            try:
-                                parsed = urlparse(line)
-                                params = parse_qs(parsed.query, keep_blank_values=True)
-                                discovered_params.update(params.keys())
-                            except:
-                                pass
-                    
-                    wayback_params_new = len(discovered_params) - wayback_params_before
-                    logger.info(f"   ✅ Waybackurls→Katana found {len(wayback_urls)} historical URLs with {wayback_params_new} new parameters")
-                    if self.verbose and wayback_urls:
-                        logger.info(f"   Sample URLs: {', '.join(wayback_urls[:3])}")
-                else:
-                    logger.info(f"   ⚠️  Waybackurls→Katana found no URLs")
-            
-            except Exception as e:
-                logger.debug(f"waybackurls→katana error: {e}")
-        
-        # Try katana directly on target URL as fallback
-        if katana_exists:
-            self.log_info("🔍 [KATANA-DIRECT] Running URL crawling with katana directly on target...")
-            try:
-                cmd = f"katana -u {self.target_url} 2>&1"
-                success, result, error = run_command(cmd)
-                
-                if success and result:
-                    katana_direct_urls = []
-                    katana_direct_params_before = len(discovered_params)
-                    
-                    for line in result.split('\n'):
-                        line = line.strip()
-                        # Parse katana's [INF] output format
-                        if '[INF] Started standard crawling for =>' in line:
-                            url = line.split('[INF] Started standard crawling for => ')[-1].strip()
-                            if url and url.startswith('http'):
-                                katana_direct_urls.append(url)
-                                discovered_urls.append(url)
-                                try:
-                                    parsed = urlparse(url)
-                                    params = parse_qs(parsed.query, keep_blank_values=True)
-                                    discovered_params.update(params.keys())
-                                except:
-                                    pass
-                        # Also check for raw URLs
-                        elif line and line.startswith('http') and '[INF]' not in line:
-                            katana_direct_urls.append(line)
-                            discovered_urls.append(line)
-                            try:
-                                parsed = urlparse(line)
-                                params = parse_qs(parsed.query, keep_blank_values=True)
-                                discovered_params.update(params.keys())
-                            except:
-                                pass
-                    
-                    katana_direct_params_new = len(discovered_params) - katana_direct_params_before
-                    logger.info(f"   ✅ Katana-Direct found {len(katana_direct_urls)} URLs with {katana_direct_params_new} new parameters")
-                    if self.verbose and katana_direct_urls:
-                        logger.info(f"   Sample URLs: {', '.join(katana_direct_urls[:3])}")
-                else:
-                    logger.info(f"   ⚠️  Katana-Direct found no URLs")
-            
-            except Exception as e:
-                logger.debug(f"katana-direct error: {e}")
-        
-        # Try paramspider piped to katana
-        if check_tool_exists('paramspider', 'paramspider -h') and check_tool_exists('katana', 'katana -h'):
-            self.log_info("🔍 [PARAMSPIDER+KATANA] Running parameter enumeration with paramspider piped to katana...")
-            try:
-                domain = get_domain_from_url(self.target_url)
-                cmd = f"paramspider -d {domain} -s 2>/dev/null | katana 2>&1"
-                success, result, error = run_command(cmd)
-                
-                if success and result:
-                    spider_urls = []
-                    spider_params_before = len(discovered_params)
-                    
-                    for line in result.split('\n'):
-                        line = line.strip()
-                        # Parse katana's [INF] output format
-                        if '[INF] Started standard crawling for =>' in line:
-                            url = line.split('[INF] Started standard crawling for => ')[-1].strip()
-                            if url and url.startswith('http'):
-                                spider_urls.append(url)
-                                discovered_urls.append(url)
-                                try:
-                                    parsed = urlparse(url)
-                                    params = parse_qs(parsed.query, keep_blank_values=True)
-                                    discovered_params.update(params.keys())
-                                except:
-                                    pass
-                        # Also check for raw URLs
-                        elif line and line.startswith('http') and '[INF]' not in line:
-                            spider_urls.append(line)
-                            discovered_urls.append(line)
-                            try:
-                                parsed = urlparse(line)
-                                params = parse_qs(parsed.query, keep_blank_values=True)
-                                discovered_params.update(params.keys())
-                            except:
-                                pass
-                    
-                    spider_params_new = len(discovered_params) - spider_params_before
-                    logger.info(f"   ✅ Paramspider→Katana found {len(spider_urls)} URLs with {spider_params_new} new parameters")
-                    if self.verbose and spider_urls:
-                        logger.info(f"   Sample URLs: {', '.join(spider_urls[:3])}")
-                else:
-                    logger.info(f"   ⚠️  Paramspider→Katana found no URLs")
-            
-            except Exception as e:
-                logger.debug(f"paramspider→katana error: {e}")
+            logger.debug(f"Discovery pipeline error: {e}")
+            return []
 
-        # Exhaustive ParamSpider expansion across all discovered hosts.
-        # ParamSpider operates at domain scope, so we run it for each unique host found.
-        if check_tool_exists('paramspider', 'paramspider -h'):
-            try:
-                all_hosts = set()
-                all_hosts.add(urlparse(self.target_url).netloc)
-                for u in discovered_urls:
-                    try:
-                        host = urlparse(u).netloc
-                        if host:
-                            all_hosts.add(host)
-                    except Exception:
-                        pass
+        self.discovered_url_records = result.get('records', [])
+        self.discovered_param_records = result.get('parameter_records', [])
+        self.discovered_urls = result.get('urls', [])
+        self.discovery_output_dir = result.get('output_dir')
+        self.discovery_source_counts = result.get('source_counts', {})
 
-                if all_hosts:
-                    self.log_info(f"🔍 [PARAMSPIDER-ALL] Running paramspider on {len(all_hosts)} discovered host(s)...")
+        discovered_params = result.get('parameters', [])
 
-                for host in sorted(all_hosts):
-                    try:
-                        cmd = f"paramspider -d {host} -s 2>/dev/null | head -2000"
-                        success, result, error = run_command(cmd)
-                        if not success or not result:
-                            continue
-
-                        before_params = len(discovered_params)
-                        before_urls = len(discovered_urls)
-
-                        for line in result.split('\n'):
-                            line = line.strip()
-                            if not line.startswith('http'):
-                                continue
-
-                            discovered_urls.append(line)
-                            try:
-                                parsed = urlparse(line)
-                                params = parse_qs(parsed.query, keep_blank_values=True)
-                                discovered_params.update(params.keys())
-                            except Exception:
-                                pass
-
-                        new_params = len(discovered_params) - before_params
-                        new_urls = len(discovered_urls) - before_urls
-                        if new_urls > 0 or new_params > 0:
-                            logger.info(f"   ✅ ParamSpider-All({host}) found {new_urls} URLs and {new_params} new parameters")
-
-                    except Exception as e:
-                        logger.debug(f"paramspider-all error for {host}: {e}")
-            except Exception as e:
-                logger.debug(f"paramspider-all setup error: {e}")
-        
         if discovered_params:
-            logger.info(f"✅ Discovered {len(discovered_params)} unique parameters: {', '.join(list(discovered_params)[:10])}")
-            if self.silent:
-                print(f"[DEBUG] Discovered {len(discovered_params)} parameters")
-        else:
-            if self.silent:
-                print(f"[DEBUG] No parameters discovered from any sources")
-        
-        if discovered_urls:
-            discovered_urls = list(dict.fromkeys(discovered_urls))
-            logger.info(f"✅ Discovered {len(discovered_urls)} unique URLs with parameters")
-            # Store URLs for later testing
-            self.discovered_urls = discovered_urls
+            sample = ', '.join(discovered_params[:10])
+            self.log_info(f"✅ Discovery pipeline produced {len(discovered_params)} parameter records")
             if self.verbose:
-                logger.info(f"   URLs will be tested individually for XSS injection")
-        
-        return list(discovered_params)
+                self.log_info(f"   Sample parameters: {sample}")
+
+        if self.discovered_urls:
+            self.log_info(f"✅ Discovery pipeline produced {len(self.discovered_urls)} URL records")
+            if self.verbose:
+                self.log_info("   URL records persisted under output/discovery")
+
+        return discovered_params
     
     def _detect_ssrf_indicators(self, response: str) -> bool:
         """Detect SSRF indicators"""
@@ -1662,30 +1573,93 @@ class VulnerabilityScanner:
                 return True
         
         return False
+
+    def _get_nuclei_help(self, refresh: bool = False) -> str:
+        """Return nuclei help text for capability checks."""
+        if self.nuclei_help_cache is not None and not refresh:
+            return self.nuclei_help_cache
+
+        success, result, error = run_command('nuclei -h', timeout=self.timeout, retry=False)
+        self.nuclei_help_cache = result or ""
+        if not success and not self.nuclei_help_cache:
+            logger.debug(f"Unable to fetch nuclei help output: {error}")
+        return self.nuclei_help_cache
+
+    def _update_nuclei_templates_if_needed(self) -> None:
+        """Update nuclei templates when explicitly requested."""
+        if not self.update_nuclei_templates:
+            return
+
+        self.log_info("🔄 [NUCLEI] Updating nuclei templates...")
+        success, result, error = run_command('nuclei -ut', timeout=self.timeout, retry=False)
+        if success:
+            self.log_info("✅ [NUCLEI] Templates updated")
+        else:
+            logger.warning(f"⚠️  Nuclei template update failed: {error or result}")
+
+    def _ensure_nuclei_capabilities(self, required_flags: List[str], auto_upgrade: bool = False) -> bool:
+        """Check whether the installed nuclei supports required flags and optionally upgrade it."""
+        help_text = self._get_nuclei_help()
+        missing = [flag for flag in required_flags if flag not in help_text]
+        if not missing:
+            return True
+
+        logger.warning(f"⚠️  Installed nuclei is missing required flags: {', '.join(missing)}")
+        if not (auto_upgrade or self.update_nuclei):
+            logger.warning("⚠️  Re-run with --update-nuclei to allow an automatic nuclei upgrade")
+            return False
+
+        self.log_info("🔄 [NUCLEI] Updating nuclei engine...")
+        success, result, error = run_command('nuclei -up', timeout=self.timeout, retry=False)
+        if not success:
+            logger.warning(f"⚠️  Nuclei upgrade failed: {error or result}")
+            return False
+
+        refreshed_help = self._get_nuclei_help(refresh=True)
+        still_missing = [flag for flag in required_flags if flag not in refreshed_help]
+        if still_missing:
+            logger.warning(f"⚠️  Nuclei upgrade completed but still missing flags: {', '.join(still_missing)}")
+            return False
+
+        self.log_info("✅ [NUCLEI] Engine updated successfully")
+        return True
+
+    def _prepare_nuclei_targets(self, discover: bool = False) -> Optional[str]:
+        """Prepare a target list file for nuclei scans."""
+        if discover and not self.discovered_urls:
+            try:
+                self._discover_parameters_with_tools()
+            except Exception as e:
+                logger.debug(f"Parameter discovery before nuclei target preparation failed: {e}")
+
+        targets = [self.target_url]
+        if self.discovered_urls:
+            targets.extend(self.discovered_urls)
+        targets = list(dict.fromkeys(targets))
+
+        targets_file = '/tmp/scanner_nuclei_targets.txt'
+        try:
+            with open(targets_file, 'w') as f:
+                f.write('\n'.join(targets) + '\n')
+        except Exception as e:
+            logger.warning(f"⚠️  Unable to prepare nuclei target list: {e}")
+            return None
+
+        return targets_file
     
     def _scan_nuclei(self) -> None:
         """Scan using Nuclei templates for comprehensive vulnerability detection"""
         self.log_info("🔍 [NUCLEI] Starting Nuclei template-based scanning...")
-        if self.silent:
-            print("[DEBUG _scan_nuclei] Starting nuclei scan...")
         
         # Check if nuclei is available
         if not check_tool_exists('nuclei', 'nuclei -version'):
             logger.warning("⚠️  Nuclei not installed. Skipping template-based scanning.")
-            if self.silent:
-                print("[DEBUG _scan_nuclei] Nuclei NOT FOUND - skipping")
             logger.info("   To install: go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest")
             return
         
         try:
-            # Determine nuclei tags based on scan_types
-            if self.scan_types and len(self.scan_types) == 1:
-                # Single vulnerability type - use specific tag
-                scan_type = self.scan_types[0]
-                tags = scan_type if scan_type in ['xss', 'sqli', 'ssrf', 'xxe', 'lfi'] else 'cves,vulnerabilities,misconfigurations'
-            else:
-                # Multiple types or default - use all template categories
-                tags = 'cves,vulnerabilities,misconfigurations'
+            self._update_nuclei_templates_if_needed()
+            tags = self._build_nuclei_tags(default_tags='cves,vulnerabilities,misconfigurations')
             
             # Run nuclei with multiple template categories
             cmd = [
@@ -1762,14 +1736,8 @@ class VulnerabilityScanner:
             return
         
         try:
-            # Determine nuclei tags based on scan_types
-            if self.scan_types and len(self.scan_types) == 1:
-                # Single vulnerability type - use specific tag
-                scan_type = self.scan_types[0]
-                tags = scan_type if scan_type in ['xss', 'sqli', 'ssrf', 'xxe', 'lfi'] else 'cves,vulnerabilities,misconfigurations'
-            else:
-                # Multiple types or default - use all template categories
-                tags = 'cves,vulnerabilities,misconfigurations,exposures'
+            self._update_nuclei_templates_if_needed()
+            tags = self._build_nuclei_tags(default_tags='cves,vulnerabilities,misconfigurations,exposures')
             
             # Advanced nuclei command with more options
             severity = 'critical,high,medium' if self.deep else 'critical,high'
@@ -1837,6 +1805,126 @@ class VulnerabilityScanner:
         
         except Exception as e:
             logger.warning(f"⚠️  Advanced Nuclei error: {e}")
+
+    def _scan_nuclei_full(self) -> None:
+        """Run an extensive nuclei scan with broad template coverage and discovered URL input."""
+        self.log_info("🔍 [NUCLEI-FULL] Starting extensive Nuclei scan...")
+
+        if not check_tool_exists('nuclei', 'nuclei -version'):
+            logger.warning("⚠️  Nuclei not installed. Skipping extensive scan.")
+            logger.info("   To install: go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest")
+            return
+
+        if not self._ensure_nuclei_capabilities(['-as', '-jsonl', '-stats', '-irr'], auto_upgrade=True):
+            return
+
+        self._update_nuclei_templates_if_needed()
+        targets_file = self._prepare_nuclei_targets(discover=True)
+        if not targets_file:
+            return
+
+        tags = self._build_nuclei_tags(
+            default_tags='cve,vulnerabilities,exposure,misconfig,takeover,tech,osint,default-logins,panel,token-spray,file,config'
+        )
+
+        cmd = [
+            'nuclei',
+            '-l', targets_file,
+            '-as',
+            '-rl', '150',
+            '-c', str(max(10, self.threads)),
+            '-bulk-size', str(max(25, self.threads * 5)),
+            '-tags', tags,
+            '-severity', 'info,low,medium,high,critical',
+            '-jsonl',
+            '-stats',
+            '-irr',
+            '-retries', '2',
+            '-max-host-error', '30',
+        ]
+
+        if self.timeout is not None:
+            cmd.extend(['-timeout', str(self.timeout)])
+        else:
+            cmd.extend(['-timeout', '15'])
+
+        if self.bypass_waf:
+            cmd.extend(['-headless'])
+
+        if self.deep or self.aggressive:
+            cmd.extend(['-automatic-scan'])
+
+        if self.verbose:
+            logger.info(f"Running: {' '.join(cmd)}")
+
+        success, result, error = run_command(' '.join(cmd), timeout=self.timeout)
+        if not success and not result:
+            logger.warning(f"⚠️  Extensive Nuclei scan failed: {error}")
+            return
+
+        findings = self._parse_nuclei_results(result, source='nuclei-full')
+        if findings:
+            self.findings.extend(findings)
+            for finding in findings:
+                if self.live_output:
+                    self._print_finding(finding)
+            logger.info(f"✅ [NUCLEI-FULL] Found {len(findings)} result(s)")
+        else:
+            logger.info("✅ Extensive Nuclei scan completed with no vulnerabilities")
+
+    def _scan_nuclei_cves(self) -> None:
+        """Run a CVE-focused nuclei scan with broad severity coverage."""
+        self.log_info("🔍 [NUCLEI-CVES] Starting CVE-focused Nuclei scan...")
+
+        if not check_tool_exists('nuclei', 'nuclei -version'):
+            logger.warning("⚠️  Nuclei not installed. Skipping CVE scan.")
+            logger.info("   To install: go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest")
+            return
+
+        if not self._ensure_nuclei_capabilities(['-jsonl', '-tags', '-severity'], auto_upgrade=True):
+            return
+
+        self._update_nuclei_templates_if_needed()
+        targets_file = self._prepare_nuclei_targets(discover=True)
+        if not targets_file:
+            return
+
+        cmd = [
+            'nuclei',
+            '-l', targets_file,
+            '-tags', 'cve',
+            '-severity', 'info,low,medium,high,critical',
+            '-jsonl',
+            '-stats',
+            '-retries', '2',
+            '-rl', '150',
+            '-c', str(max(10, self.threads)),
+            '-bulk-size', str(max(25, self.threads * 5)),
+            '-max-host-error', '30',
+        ]
+
+        if self.timeout is not None:
+            cmd.extend(['-timeout', str(self.timeout)])
+        else:
+            cmd.extend(['-timeout', '15'])
+
+        if self.verbose:
+            logger.info(f"Running: {' '.join(cmd)}")
+
+        success, result, error = run_command(' '.join(cmd), timeout=self.timeout)
+        if not success and not result:
+            logger.warning(f"⚠️  CVE-focused Nuclei scan failed: {error}")
+            return
+
+        findings = self._parse_nuclei_results(result, source='nuclei-cves')
+        if findings:
+            self.findings.extend(findings)
+            for finding in findings:
+                if self.live_output:
+                    self._print_finding(finding)
+            logger.info(f"✅ [NUCLEI-CVES] Found {len(findings)} result(s)")
+        else:
+            logger.info("✅ CVE-focused Nuclei scan completed with no vulnerabilities")
     
     def _print_finding(self, finding: Dict):
         """Print a single finding with formatted output"""
@@ -1856,8 +1944,8 @@ class VulnerabilityScanner:
         # Format: "✅ [XSS] found at https://target.com?param=PAYLOAD"
         if status == 'XSS':
             print(f"{color}✅ [XSS]{reset} found at {finding.get('test_url', finding.get('url', 'N/A'))}")
-        elif status == 'REFLECTION':
-            print(f"{color}⚠️  [REFLECTION]{reset} found at {finding.get('test_url', finding.get('url', 'N/A'))}")
+        elif status == 'HTML_INJECTION':
+            print(f"{color}✅ [HTML-INJECTION]{reset} found at {finding.get('test_url', finding.get('url', 'N/A'))}")
         else:
             print(f"{color}[{status.upper()}]{reset} {finding.get('type', 'Unknown')}")
             print(f"  URL: {finding.get('test_url', finding.get('url', 'N/A'))}")
@@ -1865,6 +1953,73 @@ class VulnerabilityScanner:
         print(f"  Parameter: {finding.get('parameter', 'N/A')}")
         print(f"  Payload Type: {finding.get('payload_type', 'N/A')}")
         print(f"  Severity: {finding.get('severity', 'N/A')}")
+        if finding.get('confidence'):
+            print(f"  Confidence: {finding.get('confidence')}")
         if finding.get('proof'):
             print(f"  Proof: {finding.get('proof')}")
         print()
+
+    def _build_nuclei_tags(self, default_tags: str) -> str:
+        """Build nuclei tags from the active scan types."""
+        supported = [scan_type for scan_type in self.scan_types if scan_type in ['xss', 'sqli', 'ssrf', 'xxe', 'lfi']]
+        if supported:
+            return ','.join(dict.fromkeys(supported))
+        return default_tags
+
+    def _parse_nuclei_results(self, result: str, source: str) -> List[Dict]:
+        """Parse nuclei JSON/JSONL output into internal findings."""
+        import json
+
+        findings = []
+        seen = set()
+
+        for line in (result or '').splitlines():
+            line = line.strip()
+            if not line or not line.startswith('{'):
+                continue
+
+            try:
+                data = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            template_id = data.get('template-id', 'N/A')
+            matched_at = data.get('matched-at', self.target_url)
+            info = data.get('info', {}) or {}
+            classification = info.get('classification', {}) or {}
+            cve_id = (
+                classification.get('cve-id') or
+                classification.get('cve') or
+                data.get('cve-id')
+            )
+
+            key = calculate_hash(f"{template_id}:{matched_at}:{source}")
+            if key in seen:
+                continue
+            seen.add(key)
+
+            title = info.get('name', 'Unknown')
+            finding_type = f"Nuclei CVE: {cve_id}" if cve_id else f"Nuclei: {title}"
+            proof = data.get('matcher-name') or data.get('extracted-results') or data.get('curl-command') or matched_at
+
+            finding = {
+                'type': finding_type,
+                'status': 'NUCLEI',
+                'parameter': 'N/A',
+                'url': matched_at,
+                'proof': str(proof),
+                'severity': info.get('severity', 'Medium').capitalize(),
+                'template_id': template_id,
+                'source': source,
+            }
+
+            if cve_id:
+                finding['cve'] = cve_id
+            if info.get('tags'):
+                finding['tags'] = info.get('tags')
+            if info.get('reference'):
+                finding['references'] = info.get('reference')
+
+            findings.append(finding)
+
+        return findings

@@ -16,6 +16,7 @@ class JSAnalyzer:
         self.discovered_endpoints = set()
         self.discovered_params = set()
         self.xss_sinks = {}  # {url: [sink_list]}
+        self.file_results = {}
         logger.info("JSAnalyzer initialized")
     
     def analyze_js_files(self, js_urls: List[str]) -> Tuple[Set[str], Set[str], Dict]:
@@ -40,6 +41,11 @@ class JSAnalyzer:
                     endpoints, params, sinks = future.result()
                     self.discovered_endpoints.update(endpoints)
                     self.discovered_params.update(params)
+                    self.file_results[url] = {
+                        'endpoints': sorted(endpoints),
+                        'parameters': sorted(params),
+                        'sinks': list(sinks),
+                    }
                     if sinks:
                         self.xss_sinks[url] = sinks
                 except Exception as e:
@@ -50,6 +56,10 @@ class JSAnalyzer:
         logger.info(f"Found {len(self.xss_sinks)} files with XSS sinks")
         
         return self.discovered_endpoints, self.discovered_params, self.xss_sinks
+
+    def get_file_results(self) -> Dict[str, Dict]:
+        """Get per-JavaScript-file extraction results."""
+        return self.file_results
     
     def _analyze_single_js(self, url: str) -> Tuple[Set[str], Set[str], List[str]]:
         """Analyze a single JavaScript file"""

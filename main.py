@@ -9,12 +9,14 @@ Usage:
     python main.py https://example.com --param q --deep
     python main.py https://example.com --sql-only --verbose
     python main.py https://example.com --xss-only --threads 20
+    python main.py https://example.com --nuclei
 """
 
 import argparse
 import sys
 import logging
 import os
+import concurrent.futures
 from pathlib import Path
 from scanner.logger import logger
 from scanner.utils import is_valid_url
@@ -23,45 +25,60 @@ from scanner.utils import is_valid_url
 def determine_scan_types(args):
     """Determine which scan types to run based on command-line arguments"""
     scan_types = []
-    if args.xss_only:
-        scan_types = ['xss']
-    elif args.xss_nuclei:
-        scan_types = ['xss', 'nuclei']
-    elif args.sql_only:
-        scan_types = ['sqli']
-    elif args.ssrf_only:
-        scan_types = ['ssrf']
-    elif args.xxe_only:
-        scan_types = ['xxe']
-    elif args.nuclei_only:
-        scan_types = ['nuclei']
-    else:
+
+    selector_flags = [
+        args.xss_only,
+        args.xss_nuclei,
+        args.sql_only,
+        args.ssrf_only,
+        args.xxe_only,
+        args.nuclei_only,
+        args.nuclei,
+        args.nuclei_cves,
+    ]
+
+    if not any(selector_flags):
         # Default: include all methods
         scan_types = ['xss', 'sqli', 'ssrf', 'nuclei']
-        
-        # Add enhanced scanning methods based on flags
-        if args.path_xss:
-            scan_types.append('path-xss')
-        if args.custom_param:
-            scan_types.append('custom-param')
-        if args.sqlmap:
-            scan_types.append('sqlmap')
-        if args.param_discovery:
-            scan_types.append('param-discovery')
-        
-        # Deep mode automatically enables path-based XSS, sqlmap, and XXE
-        if args.deep and 'path-xss' not in scan_types:
-            scan_types.append('path-xss')
-        if args.deep and 'xxe' not in scan_types:
+    else:
+        if args.xss_only or args.xss_nuclei:
+            scan_types.append('xss')
+        if args.sql_only:
+            scan_types.append('sqli')
+        if args.ssrf_only:
+            scan_types.append('ssrf')
+        if args.xxe_only:
             scan_types.append('xxe')
-        
-        # Aggressive mode enables parameter discovery and XXE
-        if args.aggressive and 'param-discovery' not in scan_types:
-            scan_types.append('param-discovery')
-        if args.aggressive and 'xxe' not in scan_types:
-            scan_types.append('xxe')
-    
-    return scan_types
+        if args.nuclei_only or args.xss_nuclei:
+            scan_types.append('nuclei')
+        if args.nuclei:
+            scan_types.append('nuclei-full')
+        if args.nuclei_cves:
+            scan_types.append('nuclei-cves')
+
+    # Add enhanced scanning methods based on flags
+    if args.path_xss and 'path-xss' not in scan_types:
+        scan_types.append('path-xss')
+    if args.custom_param and 'custom-param' not in scan_types:
+        scan_types.append('custom-param')
+    if args.sqlmap and 'sqlmap' not in scan_types:
+        scan_types.append('sqlmap')
+    if args.param_discovery and 'param-discovery' not in scan_types:
+        scan_types.append('param-discovery')
+
+    # Deep mode automatically enables path-based XSS and XXE
+    if args.deep and 'path-xss' not in scan_types:
+        scan_types.append('path-xss')
+    if args.deep and 'xxe' not in scan_types:
+        scan_types.append('xxe')
+
+    # Aggressive mode enables parameter discovery and XXE
+    if args.aggressive and 'param-discovery' not in scan_types:
+        scan_types.append('param-discovery')
+    if args.aggressive and 'xxe' not in scan_types:
+        scan_types.append('xxe')
+
+    return list(dict.fromkeys(scan_types))
 
 
 def scan_subdomains_batch(args):
@@ -89,9 +106,7 @@ def scan_subdomains_batch(args):
         print("❌ No subdomains found in file")
         sys.exit(1)
     
-    if args.silent:
-        print(f"Scan begun: {len(subdomains)} subdomains")
-    else:
+    if not args.silent:
         print(f"🔍 Starting batch scan of {len(subdomains)} subdomains")
         # Show actual flags being used
         actual_flags = []
@@ -103,26 +118,42 @@ def scan_subdomains_batch(args):
             actual_flags.append('--bypass-waf')
         if args.xss_verbose:
             actual_flags.append('--xss-verbose')
+        if args.nuclei:
+            actual_flags.append('--nuclei')
+        if args.nuclei_cves:
+            actual_flags.append('--nuclei-cves')
+        if args.update_nuclei_templates:
+            actual_flags.append('--update-nuclei-templates')
+        if args.update_nuclei:
+            actual_flags.append('--update-nuclei')
+        if args.discovery_cache:
+            actual_flags.append(f'--discovery-cache {args.discovery_cache}')
         actual_flags.append(f'--threads {args.threads}')
         actual_flags.append(f'--timeout {args.timeout}')
         print(f"Flags: {' '.join(actual_flags)}\n")
     
+    scan_types = determine_scan_types(args)
     all_findings = []
     domain_param_seen = set()  # Track (domain, param) pairs to avoid duplicates
-    
-    for i, subdomain in enumerate(subdomains, 1):
-        # Ensure subdomain has protocol
-        if not subdomain.startswith(('http://', 'https://')):
-            url = f'https://{subdomain}'
-        else:
-            url = subdomain
-        
+    printed_findings = 0
+
+    def batch_worker_count() -> int:
+        has_nuclei = any(scan in scan_types for scan in ['nuclei', 'nuclei-full', 'nuclei-cves'])
+        if args.update_nuclei_templates or args.update_nuclei:
+            return 1
+        if has_nuclei:
+            return max(1, min(2, args.threads // 5 if args.threads > 4 else 1))
+        return max(1, min(4, args.threads))
+
+    def run_single_subdomain(index_and_subdomain):
+        i, subdomain = index_and_subdomain
+        url = f'https://{subdomain}' if not subdomain.startswith(('http://', 'https://')) else subdomain
+
         if not args.silent:
-            print(f"[{i}/{len(subdomains)}] Scanning {url}...")
-        
-        # Create a temporary args object for this subdomain
+            print(f"[{i}/{len(subdomains)}] Scanning {url}...", flush=True)
+
         from scanner.scanner_engine import VulnerabilityScanner
-        
+
         scanner = VulnerabilityScanner(
             target_url=url,
             threads=args.threads,
@@ -131,50 +162,112 @@ def scan_subdomains_batch(args):
             aggressive=args.aggressive,
             bypass_waf=args.bypass_waf,
             verbose=False,
-            silent=True,  # Always silent for batch
+            silent=True,  # Keep internals quiet; batch loop prints summaries.
             live_output=False,
-            xss_verbose=args.xss_verbose
+            xss_verbose=args.xss_verbose,
+            update_nuclei_templates=args.update_nuclei_templates,
+            update_nuclei=args.update_nuclei,
+            discovery_cache=args.discovery_cache
         )
-        
-        # Run scan with the appropriate scan types based on flags
-        scan_types = determine_scan_types(args)
+
         findings = scanner.scan(param=None, scan_types=scan_types)
-        
-        if findings:
-            for finding in findings:
-                finding['subdomain'] = subdomain
-                all_findings.append(finding)
-                
-                # Debug: Log the complete finding for diagnostics
-                param = finding.get('parameter', 'UNKNOWN_PARAM')
-                test_url = finding.get('test_url', '')
-                payload = finding.get('payload', '')
-                payload_type = finding.get('payload_type', 'unknown')
-                base_url = finding.get('url', subdomain)
-                
-                # Deduplication: track (domain, parameter) pairs
-                domain_base = base_url.split('?')[0].split('#')[0]
-                dedup_key = f"{domain_base}:{param}"
-                
-                # Only print if we haven't seen this exact (domain, parameter) pair before
-                if dedup_key not in domain_param_seen:
-                    domain_param_seen.add(dedup_key)
-                    
-                    # Show the actual test URL if it exists, otherwise construct it
-                    if test_url and '?' in test_url:
-                        display_url = test_url
-                    else:
-                        # Fallback: construct the URL with parameter
-                        display_url = f"{base_url}?{param}={payload}"
-                    
-                    print(f"[INJECTABLE] {display_url} | param={param} | type={payload_type}")
+        return {
+            'index': i,
+            'subdomain': subdomain,
+            'url': url,
+            'findings': findings,
+            'discovered_urls': len(getattr(scanner, 'discovered_urls', []) or []),
+            'discovered_params': len(getattr(scanner, 'discovered_param_records', []) or []),
+            'cache_dir': getattr(scanner, 'discovery_output_dir', None),
+            'source_counts': getattr(scanner, 'discovery_source_counts', {}) or {},
+        }
+
+    worker_count = batch_worker_count()
+
+    if not args.silent and worker_count > 1:
+        print(f"Batch workers: {worker_count}\n")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
+        future_to_index = {
+            executor.submit(run_single_subdomain, item): item[0]
+            for item in enumerate(subdomains, 1)
+        }
+        for future in concurrent.futures.as_completed(future_to_index):
+            result = future.result()
+            subdomain = result['subdomain']
+            findings = result['findings']
+
+            if not args.silent:
+                source_parts = []
+                for source in sorted(result['source_counts'].keys()):
+                    counts = result['source_counts'][source]
+                    source_parts.append(f"{source}:u{counts.get('urls', 0)}/p{counts.get('params', 0)}")
+                source_part = f" | sources={','.join(source_parts)}" if source_parts else ""
+                cache_part = f" | cache={result['cache_dir']}" if result['cache_dir'] else ""
+                printable_count = 0
+                for finding in findings:
+                    status = finding.get('status', finding.get('type', 'FINDING'))
+                    if status == 'NUCLEI':
+                        printable_count += 1
+                        continue
+                    param = finding.get('parameter', 'UNKNOWN_PARAM')
+                    base_url = finding.get('url', subdomain)
+                    domain_base = base_url.split('?')[0].split('#')[0]
+                    dedup_key = f"{domain_base}:{param}"
+                    if dedup_key not in domain_param_seen:
+                        printable_count += 1
+                print(
+                    f"    done | findings={len(findings)} | printed={printable_count} | discovered_urls={result['discovered_urls']} "
+                    f"| discovered_params={result['discovered_params']} | scans={','.join(scan_types)}"
+                    f"{source_part}{cache_part}"
+                )
+
+            if findings:
+                for finding in findings:
+                    finding['subdomain'] = subdomain
+                    all_findings.append(finding)
+
+                    status = finding.get('status', finding.get('type', 'FINDING'))
+                    if status == 'NUCLEI':
+                        matched_url = finding.get('url', subdomain)
+                        severity = finding.get('severity', 'Unknown')
+                        template_id = finding.get('template_id', 'N/A')
+                        cve = finding.get('cve')
+                        if cve:
+                            print(f"[NUCLEI-CVE] {matched_url} | severity={severity} | template={template_id} | cve={cve}")
+                        else:
+                            print(f"[NUCLEI] {matched_url} | severity={severity} | template={template_id}")
+                        printed_findings += 1
+                        continue
+
+                    param = finding.get('parameter', 'UNKNOWN_PARAM')
+                    test_url = finding.get('test_url', '')
+                    payload = finding.get('payload', '')
+                    payload_type = finding.get('payload_type', 'unknown')
+                    base_url = finding.get('url', subdomain)
+
+                    domain_base = base_url.split('?')[0].split('#')[0]
+                    dedup_key = f"{domain_base}:{param}"
+
+                    if dedup_key not in domain_param_seen:
+                        domain_param_seen.add(dedup_key)
+                        printed_findings += 1
+
+                        if test_url and '?' in test_url:
+                            display_url = test_url
+                        else:
+                            display_url = f"{base_url}?{param}={payload}"
+
+                        status = finding.get('status', finding.get('type', 'FINDING'))
+                        print(f"[{status}] {display_url} | param={param} | type={payload_type}")
     
     # Print summary
-    if args.silent:
-        print(f"Scan ended: found {len(all_findings)} vulnerabilities across {len(subdomains)} subdomains")
-    else:
+    if not args.silent:
         print(f"\n{'='*70}")
-        print(f"✅ Batch scan complete - Found {len(all_findings)} vulnerabilities across {len(subdomains)} subdomains")
+        print(
+            f"✅ Batch scan complete - Found {len(all_findings)} raw findings, "
+            f"printed {printed_findings} findings across {len(subdomains)} subdomains"
+        )
         print(f"{'='*70}\n")
     
     # Save results if requested
@@ -214,6 +307,15 @@ Examples:
 
   # Show results in real-time
   python main.py https://example.com --live
+
+  # Run an extensive nuclei scan
+  python main.py https://example.com --nuclei
+
+  # Run a CVE-focused nuclei scan with template refresh
+  python main.py https://example.com --nuclei-cves --update-nuclei-templates
+
+  # Reuse a saved discovery cache for scanning
+  python main.py https://example.com --xss-only --discovery-cache output/discovery/example.com_1234567890
         """
     )
     
@@ -227,7 +329,9 @@ Examples:
     parser.add_argument('--sql-only', action='store_true', help='Scan for SQL Injection only')
     parser.add_argument('--ssrf-only', action='store_true', help='Scan for SSRF only')
     parser.add_argument('--xxe-only', action='store_true', help='Scan for XXE vulnerabilities only')
-    parser.add_argument('--nuclei-only', action='store_true', help='Use Nuclei templates only')
+    parser.add_argument('--nuclei', action='store_true', help='Run an extensive Nuclei scan with broad template coverage and CVE-focused detection')
+    parser.add_argument('--nuclei-cves', action='store_true', help='Run a CVE-focused Nuclei scan')
+    parser.add_argument('--nuclei-only', action='store_true', help='Use standard Nuclei templates only')
     parser.add_argument('--path-xss', action='store_true', help='Test XSS in URL path segments')
     parser.add_argument('--custom-param', action='store_true', help='Test custom parameter injection')
     parser.add_argument('--sqlmap', action='store_true', help='Use sqlmap for SQL injection testing')
@@ -242,6 +346,9 @@ Examples:
     parser.add_argument('--aggressive', action='store_true', help='Aggressive mode - ignore rate limits, discover parameters')
     parser.add_argument('--bypass-waf', action='store_true', help='Use WAF bypass techniques')
     parser.add_argument('--xss-verbose', action='store_true', help='Test with dangerous XSS payloads (use with specific URLs containing parameters)')
+    parser.add_argument('--update-nuclei-templates', action='store_true', help='Update nuclei templates before scanning')
+    parser.add_argument('--update-nuclei', action='store_true', help='Allow the scanner to update nuclei if required flags are missing')
+    parser.add_argument('--discovery-cache', help='Reuse a saved discovery output directory instead of recollecting URLs and parameters')
     
     # Output options
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
@@ -291,7 +398,10 @@ Examples:
         verbose=args.verbose,
         silent=args.silent,
         live_output=args.live,
-        xss_verbose=args.xss_verbose
+        xss_verbose=args.xss_verbose,
+        update_nuclei_templates=args.update_nuclei_templates,
+        update_nuclei=args.update_nuclei,
+        discovery_cache=args.discovery_cache
     )
     
     if args.validate:
@@ -306,9 +416,7 @@ Examples:
     scan_types = determine_scan_types(args)
     
     # Run scan
-    if args.silent:
-        print(f"Scan begun: {args.url}")
-    else:
+    if not args.silent:
         print(f"\n{'='*70}")
         print(f"🔍 Scanning: {args.url}")
         print(f"{'='*70}\n")
@@ -320,35 +428,31 @@ Examples:
     
     # Output results
     if findings:
-        if args.silent:
-            pass
-        else:
+        if not args.silent:
             print(f"\n{'='*70}")
             print(f"✅ Found {len(findings)} vulnerability/ies")
             print(f"{'='*70}\n")
         # Always show findings details, regardless of silent mode
         for finding in findings:
             _print_finding(finding, silent=args.silent)
-        if args.silent:
-            print(f"Scan ended: found {len(findings)} vulnerabilities")
     else:
         # Show scan summary even if no findings
-        if args.silent:
-            print(f"Scan ended: no vulnerabilities found")
-        else:
+        if not args.silent:
             print(f"\n{'='*70}")
             print(f"✅ Scan completed - No vulnerabilities found")
             print(f"{'='*70}")
             print(f"  Target: {args.url}")
             print(f"  URLs discovered: {len(scanner.discovered_urls)}")
+            if scanner.discovery_output_dir:
+                print(f"  Discovery cache: {scanner.discovery_output_dir}")
             print(f"  Scan types: {', '.join(scan_types)}")
             print()
     
     if args.json and findings:
-        _save_json_report(args.json, findings, args.url)
+        _save_json_report(args.json, findings, args.url, silent=args.silent)
     
     if args.output and findings:
-        _save_text_report(args.output, findings, args.url)
+        _save_text_report(args.output, findings, args.url, silent=args.silent)
     
     return len(findings)
 
@@ -369,7 +473,10 @@ def _print_finding(finding, silent=False):
         else:
             display_url = f"{base_url}?{param}={payload}"
         
-        print(f"[INJECTABLE] {display_url} | param={param} | type={payload_type}")
+        status = finding.get('status', finding.get('type', 'FINDING'))
+        confidence = finding.get('confidence')
+        confidence_part = f" | confidence={confidence}" if confidence else ""
+        print(f"[{status}] {display_url} | param={param} | type={payload_type}{confidence_part}")
     else:
         # Normal mode: detailed output
         severity_colors = {
@@ -388,13 +495,15 @@ def _print_finding(finding, silent=False):
         print(f"  URL: {display_url}")
         print(f"  Parameter: {finding.get('parameter', 'N/A')}")
         print(f"  Payload: {finding.get('payload', 'N/A')}")
+        if finding.get('confidence'):
+            print(f"  Confidence: {finding.get('confidence')}")
         if 'poc_url' in finding:
             print(f"  PoC: {finding['poc_url']}")
         print(f"  Proof: {finding.get('proof', 'N/A')[:150]}")
         print()
 
 
-def _save_json_report(filepath, findings, target):
+def _save_json_report(filepath, findings, target, silent=False):
     """Save findings to JSON"""
     import json
     from datetime import datetime
@@ -409,12 +518,14 @@ def _save_json_report(filepath, findings, target):
     try:
         with open(filepath, 'w') as f:
             json.dump(report, f, indent=2)
-        print(f"✅ Results saved to: {filepath}")
+        if not silent:
+            print(f"✅ Results saved to: {filepath}")
     except Exception as e:
-        print(f"❌ Error saving JSON: {e}")
+        if not silent:
+            print(f"❌ Error saving JSON: {e}")
 
 
-def _save_text_report(output_dir, findings, target):
+def _save_text_report(output_dir, findings, target, silent=False):
     """Save findings to text file"""
     from datetime import datetime
     import os
@@ -440,9 +551,11 @@ def _save_text_report(output_dir, findings, target):
                     f.write(f"    PoC: {finding['poc_url']}\n")
                 f.write("\n")
         
-        print(f"✅ Report saved to: {filepath}")
+        if not silent:
+            print(f"✅ Report saved to: {filepath}")
     except Exception as e:
-        print(f"❌ Error saving report: {e}")
+        if not silent:
+            print(f"❌ Error saving report: {e}")
 
 if __name__ == '__main__':
     main()
